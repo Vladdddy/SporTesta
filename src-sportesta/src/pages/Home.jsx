@@ -22,6 +22,24 @@ const Home = () => {
                 >
                     Noleggi attivi
                 </h2>
+                <form
+                    style={{
+                        marginBottom: "2rem",
+                    }}
+                    class="d-flex"
+                    role="search"
+                >
+                    <input
+                        class="form-control me-2"
+                        type="search"
+                        placeholder="Cerca"
+                        aria-label="Search"
+                    />
+                    <button class="btn btn-outline-primary" type="submit">
+                        Cerca
+                    </button>
+                </form>
+
                 <NoleggioAccordion id="3" items={accordionItems} />
                 <NoleggioAccordion id="4" items={accordionItems} />
                 <NoleggioAccordion id="5" items={accordionItems} />
