@@ -7,12 +7,38 @@ import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
 
 function App() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [type, setType] = useState(
         new URLSearchParams(window.location.search).get("type")
     );
 
-    //const [isUserLogged, setIsUserLogged] = useState(true);
-    const isUserLogged = true;
+    const checkForm = async () => {
+        const token = localStorage.getItem("authToken");
+        if (!token) return false;
+
+        try {
+            const response = await fetch(
+                "http://localhost:3000/api/protected-route",
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Protected data:", data);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.error("Auth error:", err);
+            return false;
+        }
+    };
 
     useEffect(() => {
         const onPopState = () => {
@@ -24,22 +50,33 @@ function App() {
         return () => window.removeEventListener("popstate", onPopState);
     }, []);
 
+    useEffect(() => {
+        const checkUserLogin = async () => {
+            const loginStatus = await checkForm();
+            setIsLoggedIn(loginStatus);
+        };
+
+        checkUserLogin();
+    }, []);
+
     const renderPage = () => {
-        switch (type) {
-            case "archivio":
-                return isUserLogged ? <Archivio /> : <Login />;
-
-            case "noleggio":
-                return isUserLogged ? <Noleggio /> : <Login />;
-
-            default:
-                return isUserLogged ? <Home /> : <Login />;
+        if (isLoggedIn) {
+            switch (type) {
+                case "archivio":
+                    return <Archivio />;
+                case "noleggio":
+                    return <Noleggio />;
+                default:
+                    return <Home />;
+            }
+        } else {
+            return <Login />;
         }
     };
 
     return (
         <>
-            {isUserLogged ? <Navbar /> : null}
+            {checkForm() ? <Navbar /> : null}
             {renderPage()}
         </>
     );
