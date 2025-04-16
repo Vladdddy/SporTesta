@@ -10,7 +10,10 @@ app.use(
     })
 );
 
+const SECRET_KEY = "your_secret_key";
+
 app.use(express.json());
+
 app.post("/api/login", (req, res) => {
     const { username, password } = req.body;
 
@@ -18,11 +21,11 @@ app.post("/api/login", (req, res) => {
         const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "20h" });
         res.json({ token });
     } else {
-        res.status(401).json({ error: "Invalid credentials" });
+        res.status(401).json({ error: "Credenziali non valide" });
     }
 });
 
-app.get("/api/protected-route", (req, res) => {
+app.get("/", (req, res) => {
     const authHeader = req.headers["authorization"];
 
     if (!authHeader) return res.status(401).json({ message: "Missing token" });

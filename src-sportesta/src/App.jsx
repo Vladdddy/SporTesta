@@ -17,25 +17,20 @@ function App() {
         if (!token) return false;
 
         try {
-            const response = await fetch(
-                "http://localhost:3000/api/protected-route",
-                {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const response = await fetch("http://localhost:3000/", {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
             if (response.ok) {
-                const data = await response.json();
-                console.log("Protected data:", data);
                 return true;
             } else {
                 return false;
             }
         } catch (err) {
-            console.error("Auth error:", err);
+            console.error("Errore di autorizzazione:", err);
             return false;
         }
     };
@@ -76,7 +71,7 @@ function App() {
 
     return (
         <>
-            {checkForm() ? <Navbar /> : null}
+            {isLoggedIn ? <Navbar /> : null}
             {renderPage()}
         </>
     );

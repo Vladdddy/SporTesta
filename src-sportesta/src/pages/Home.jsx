@@ -3,7 +3,6 @@ import NoleggioAccordion from "../components/NoleggioAccordion";
 import "../styles/home.css";
 
 const Home = () => {
-    //Ritorna l'header e il contenuto dell'accordion
     const accordionItems = [
         {
             title: "0001 Mauro Rossi",
@@ -11,17 +10,15 @@ const Home = () => {
         },
     ];
 
-    //Ritorna tutt i noleggi attivi
     const displayNoleggi = () => {
         return Array.from({ length: 10 }, (_, i) => (
-            <NoleggioAccordion id={i} items={accordionItems} />
+            <NoleggioAccordion key={i} id={i} items={accordionItems} />
         ));
     };
 
-    //Ritorna tutt i noleggi che scadono oggi
     const displayNoleggiScadenza = () => {
         return Array.from({ length: 2 }, (_, i) => (
-            <NoleggioAccordion id={i + 10} items={accordionItems} />
+            <NoleggioAccordion key={i} id={i + 10} items={accordionItems} />
         ));
     };
 

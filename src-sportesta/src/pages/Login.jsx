@@ -1,5 +1,4 @@
 import React from "react";
-import Cookies from "js-cookie";
 
 const Login = () => {
     const handleLogin = async (event) => {
@@ -20,28 +19,13 @@ const Login = () => {
 
             if (data.token) {
                 localStorage.setItem("authToken", data.token);
-                console.log("Token stored in localStorage:", data.token);
-
-                // After storing the token, redirect to the homepage
-                window.location.href = "/home"; // or your desired route
+                window.location.href = "/home";
             } else {
-                alert("Login failed!");
+                alert("Login fallito!");
             }
         } catch (err) {
-            console.error("Login error:", err);
+            console.error("Errore di login:", err);
         }
-
-        /*if (
-            !localStorage.getItem("username") &&
-            !localStorage.getItem("password")
-        ) {
-            if (username.value === "vladyslav" && password.value === "12345") {
-                localStorage.setItem("username", username.value);
-                localStorage.setItem("password", password.value);
-
-                window.location.href = "/";
-            }
-        }*/
     };
 
     return (
