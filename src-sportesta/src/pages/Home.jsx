@@ -3,12 +3,27 @@ import NoleggioAccordion from "../components/NoleggioAccordion";
 import "../styles/home.css";
 
 const Home = () => {
+    //Ritorna l'header e il contenuto dell'accordion
     const accordionItems = [
         {
             title: "0001 Mauro Rossi",
             body: "Dettagli noleggio",
         },
     ];
+
+    //Ritorna tutt i noleggi attivi
+    const displayNoleggi = () => {
+        return Array.from({ length: 10 }, (_, i) => (
+            <NoleggioAccordion id={i} items={accordionItems} />
+        ));
+    };
+
+    //Ritorna tutt i noleggi che scadono oggi
+    const displayNoleggiScadenza = () => {
+        return Array.from({ length: 2 }, (_, i) => (
+            <NoleggioAccordion id={i + 10} items={accordionItems} />
+        ));
+    };
 
     return (
         <section className="hero">
@@ -26,25 +41,21 @@ const Home = () => {
                     style={{
                         marginBottom: "2rem",
                     }}
-                    class="d-flex"
+                    className="d-flex"
                     role="search"
                 >
                     <input
-                        class="form-control me-2"
+                        className="form-control me-2"
                         type="search"
                         placeholder="Cerca"
                         aria-label="Search"
                     />
-                    <button class="btn btn-outline-primary" type="submit">
+                    <button className="btn btn-outline-primary" type="submit">
                         Cerca
                     </button>
                 </form>
 
-                <NoleggioAccordion id="3" items={accordionItems} />
-                <NoleggioAccordion id="4" items={accordionItems} />
-                <NoleggioAccordion id="5" items={accordionItems} />
-                <NoleggioAccordion id="6" items={accordionItems} />
-                <NoleggioAccordion id="7" items={accordionItems} />
+                {displayNoleggi()}
             </div>
             <div className="container mt-4">
                 <h2
@@ -56,8 +67,8 @@ const Home = () => {
                 >
                     Scadenze di oggi
                 </h2>
-                <NoleggioAccordion id="1" items={accordionItems} />
-                <NoleggioAccordion id="2" items={accordionItems} />
+
+                {displayNoleggiScadenza()}
             </div>
         </section>
     );
