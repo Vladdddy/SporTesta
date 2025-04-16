@@ -1,0 +1,11 @@
+.hero {
+    display: flex;
+    gap: 2vw;
+}
+
+@media (max-width: 900px) {
+    .hero {
+        flex-wrap: wrap-reverse;
+        gap: 1vh;
+    }
+}
