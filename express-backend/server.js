@@ -2,29 +2,9 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const app = express();
 const cors = require("cors");
-
-app.use(
-    cors({
-        origin: "http://localhost:5173",
-        credentials: true,
-    })
-);
-
 const SECRET_KEY = "your_secret_key";
 
-app.use(express.json());
-
-app.post("/api/login", (req, res) => {
-    const { username, password } = req.body;
-
-    if (username === "admin" && password === "password123") {
-        const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "20h" });
-        res.json({ token });
-    } else {
-        res.status(401).json({ error: "Credenziali non valide" });
-    }
-});
-
+// --Login check
 app.get("/", (req, res) => {
     const authHeader = req.headers["authorization"];
 
@@ -42,6 +22,27 @@ app.get("/", (req, res) => {
         });
     });
 });
+
+// --Login authentification of credentials
+app.post("/api/login", (req, res) => {
+    const { username, password } = req.body;
+
+    if (username === "admin" && password === "password123") {
+        const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "20h" });
+        res.json({ token });
+    } else {
+        res.status(401).json({ error: "Credenziali non valide" });
+    }
+});
+
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+        credentials: true,
+    })
+);
+
+app.use(express.json());
 
 app.listen(3000, () => {
     console.log("Server running on http://localhost:3000");
