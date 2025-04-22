@@ -40,10 +40,22 @@ const AccordionItem = ({ id, item }) => (
                 ) : null}
 
                 <p className="mb-1">
-                    <strong>Da:</strong> {item.datainizio}
+                    <strong>Da:</strong>{" "}
+                    {new Date(item.datainizio).toLocaleDateString("it-IT")}
                 </p>
                 <p className="mb-1">
-                    <strong>A:</strong> {item.datafine}
+                    {item.datafine === false || item.datafine == null ? (
+                        <p className="mb-1">
+                            <strong>A:</strong> (In prestito)
+                        </p>
+                    ) : (
+                        <p className="mb-1">
+                            <strong>A:</strong>{" "}
+                            {new Date(item.datafine).toLocaleDateString(
+                                "it-IT"
+                            )}
+                        </p>
+                    )}
                 </p>
 
                 <div className="mb-2">
