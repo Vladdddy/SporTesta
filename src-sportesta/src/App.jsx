@@ -27,6 +27,7 @@ function App() {
             if (response.ok) {
                 return true;
             } else {
+                localStorage.removeItem("authToken");
                 return false;
             }
         } catch (err) {

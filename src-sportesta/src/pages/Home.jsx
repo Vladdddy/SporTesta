@@ -1,24 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import NoleggioAccordion from "../components/NoleggioAccordion";
 import "../styles/home.css";
+import { supabase } from "../supabaseClient";
 
 const Home = () => {
-    const accordionItems = [
-        {
-            title: "0001 Mauro Rossi",
-            body: "Dettagli noleggio",
-        },
-    ];
+    const [noleggi, setnoleggi] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            let { data, error } = await supabase.from("noleggio").select("*");
+            if (error) console.error("Errore:", error);
+            else setnoleggi(data);
+        };
+
+        fetchData();
+    }, []);
 
     const displayNoleggi = () => {
-        return Array.from({ length: 10 }, (_, i) => (
-            <NoleggioAccordion key={i} id={i} items={accordionItems} />
-        ));
-    };
-
-    const displayNoleggiScadenza = () => {
-        return Array.from({ length: 2 }, (_, i) => (
-            <NoleggioAccordion key={i} id={i + 10} items={accordionItems} />
+        return Array.from({ length: 1 }, (_, i) => (
+            <NoleggioAccordion key={i} id={i} items={noleggi} />
         ));
     };
 
@@ -65,7 +65,9 @@ const Home = () => {
                     Scadenze di oggi
                 </h2>
 
-                {displayNoleggiScadenza()}
+                <p style={{ textAlign: "center", color: "gray" }}>
+                    Nessuna scadenza oggi!
+                </p>
             </div>
         </section>
     );
