@@ -4,6 +4,19 @@ const app = express();
 const cors = require("cors");
 const SECRET_KEY = "your_secret_key";
 
+app.use(express.json());
+
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+        credentials: true,
+    })
+);
+
+app.listen(3000, () => {
+    console.log("Server running on http://localhost:3000");
+});
+
 // --Login check
 app.get("/", (req, res) => {
     const authHeader = req.headers["authorization"];
@@ -33,17 +46,4 @@ app.post("/api/login", (req, res) => {
     } else {
         res.status(401).json({ error: "Credenziali non valide" });
     }
-});
-
-app.use(
-    cors({
-        origin: "http://localhost:5173",
-        credentials: true,
-    })
-);
-
-app.use(express.json());
-
-app.listen(3000, () => {
-    console.log("Server running on http://localhost:3000");
 });
