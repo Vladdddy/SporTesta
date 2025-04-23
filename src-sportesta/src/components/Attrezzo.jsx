@@ -200,6 +200,14 @@ const AttrezziForm = () => {
                     </div>
                 </div>
 
+                <br />
+
+                <div className="d-flex align-items-center my-4">
+                    <hr className="flex-grow-1" />
+                    <span className="mx-3 text-muted">Tipo Noleggio</span>
+                    <hr className="flex-grow-1" />
+                </div>
+
                 <div className="mb-4">
                     <div className="d-flex gap-4 mobile">
                         <div className="form-check">
