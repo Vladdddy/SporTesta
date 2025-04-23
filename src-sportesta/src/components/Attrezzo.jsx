@@ -1,57 +1,92 @@
 import React, { useState } from "react";
 import "../styles/noleggio.css";
+import { supabase } from "../supabaseClient";
 
 const AttrezziForm = () => {
     const [selectedAttrezzo, setSelectedAttrezzo] = useState("");
     const [formData, setFormData] = useState({
-        tipoCliente: "",
-        nome: "",
         attrezzo: "",
+        nome: "",
+        tipoCliente: "",
         prezzo: "",
-        dettagliExtra: {},
+        dataInizio: "",
+        dataFine: "",
+        tipoNoleggio: "",
+        dettagli: {},
     });
 
     const handleChange = (e) => {
-        e.preventDefault();
         const { id, value, name } = e.target;
 
         if (name === "attrezzo") {
             setSelectedAttrezzo(value);
-            setFormData({ ...formData, attrezzo: value });
+            setFormData((prev) => ({ ...prev, attrezzo: value }));
         } else if (name === "tipoCliente") {
-            setFormData({ ...formData, tipoCliente: value });
-        } else if (["prezzo", "nome"].includes(id)) {
-            setFormData({ ...formData, [id]: value });
+            setFormData((prev) => ({ ...prev, tipoCliente: value }));
+        } else if (["nome", "prezzo", "dataInizio", "dataFine"].includes(id)) {
+            setFormData((prev) => ({ ...prev, [id]: value }));
         } else {
-            setFormData({
-                ...formData,
-                dettagliExtra: {
-                    ...formData.dettagliExtra,
+            setFormData((prev) => ({
+                ...prev,
+                dettagli: {
+                    ...prev.dettagli,
                     [id]: value,
                 },
-            });
+            }));
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const attrezzoMap = {
+            sci: 1,
+            snowboard: 2,
+            ciaspole: 3,
+            abbigliamento: 4,
+        };
+
+        const dataToSend = {
+            attrezzoid: attrezzoMap[formData.attrezzo],
+            nomecognome: formData.nome,
+            tipocliente: formData.tipoCliente,
+            prezzototale: parseFloat(formData.prezzo),
+            pagato: false,
+            datainizio: formData.dataInizio,
+            datafine: formData.dataFine,
+            tiponoleggio: formData.tipoNoleggio,
+        };
+
         try {
-            const response = await fetch("http://localhost:3000/api/noleggi", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
-            });
+            const { error } = await supabase
+                .from("noleggio")
+                .insert([dataToSend]);
 
-            const data = await response.json();
-            console.log("Noleggio salvato:", data);
+            if (error) {
+                console.error(
+                    "Errore durante il salvataggio su Supabase:",
+                    error
+                );
+                return;
+            }
 
-            // Genera una ricevuta testuale (puoi usare PDF o HTML a seconda del tuo obiettivo)
-            const blob = new Blob([JSON.stringify(formData, null, 2)], {
-                type: "text/plain",
-            });
+            console.log("Noleggio salvato con successo!");
+
+            const ricevuta = `
+    Cliente: ${formData.nome}
+    Tipo Cliente: ${formData.tipoCliente}
+    Attrezzo: ${formData.attrezzo}
+    Data Inizio: ${formData.dataInizio}
+    Data Fine: ${formData.dataFine}
+    Prezzo: ${formData.prezzo}€
+    
+    [Dettagli noleggio]
+    ${Object.entries(formData.dettagli)
+        .map(([key, val]) => `${key}: ${val}`)
+        .join("\n")}
+            `.trim();
+
+            const blob = new Blob([ricevuta], { type: "text/plain" });
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
@@ -60,6 +95,8 @@ const AttrezziForm = () => {
         } catch (error) {
             console.error("Errore durante il salvataggio:", error);
         }
+
+        window.location.reload();
     };
 
     const renderInputs = () => {
@@ -73,6 +110,8 @@ const AttrezziForm = () => {
                         type="text"
                         className="form-control"
                         id={field.toLowerCase()}
+                        onChange={handleChange}
+                        value={formData.dettagli[field.toLowerCase()] || ""}
                         required
                     />
                 </div>
@@ -161,6 +200,55 @@ const AttrezziForm = () => {
                     </div>
                 </div>
 
+                <div className="mb-4">
+                    <div className="d-flex gap-4 mobile">
+                        <div className="form-check">
+                            <input
+                                className="form-check-input"
+                                type="radio"
+                                name="tipoNoleggio"
+                                id="singolo"
+                                value="singolo"
+                                onChange={(e) =>
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        tipoNoleggio: e.target.value,
+                                    }))
+                                }
+                                checked={formData.tipoNoleggio === "singolo"}
+                            />
+                            <label
+                                className="form-check-label"
+                                htmlFor="singolo"
+                            >
+                                Singolo
+                            </label>
+                        </div>
+                        <div className="form-check">
+                            <input
+                                className="form-check-input"
+                                type="radio"
+                                name="tipoNoleggio"
+                                id="famiglia"
+                                value="famiglia"
+                                onChange={(e) =>
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        tipoNoleggio: e.target.value,
+                                    }))
+                                }
+                                checked={formData.tipoNoleggio === "famiglia"}
+                            />
+                            <label
+                                className="form-check-label"
+                                htmlFor="famiglia"
+                            >
+                                Famiglia
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 <br />
 
                 <div className="d-flex align-items-center my-4">
@@ -179,6 +267,34 @@ const AttrezziForm = () => {
                         id="nome"
                         onChange={handleChange}
                         value={formData.nome}
+                        required
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="dataInizio" className="form-label">
+                        Data inizio
+                    </label>
+                    <input
+                        type="date"
+                        className="form-control"
+                        id="dataInizio"
+                        onChange={handleChange}
+                        value={formData.dataInizio}
+                        required
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="dataFine" className="form-label">
+                        Data fine
+                    </label>
+                    <input
+                        type="date"
+                        className="form-control"
+                        id="dataFine"
+                        onChange={handleChange}
+                        value={formData.dataFine}
                         required
                     />
                 </div>
