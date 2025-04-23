@@ -1,3 +1,6 @@
+import React from "react";
+import image from "../assets/sportesta-logo.png";
+
 const Navbar = () => {
     const setType = (type) => {
         const url = new URL(window.location);
@@ -13,7 +16,13 @@ const Navbar = () => {
                     onClick={() => setType("home")}
                     className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
                 >
-                    <span className="fs-4">SporTesta</span>
+                    <span className="fs-4">
+                        <img
+                            style={{ width: "100px" }}
+                            src={image}
+                            alt="logo"
+                        />
+                    </span>
                 </a>
 
                 <ul className="nav nav-pills">

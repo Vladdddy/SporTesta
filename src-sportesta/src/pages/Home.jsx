@@ -9,6 +9,18 @@ const Home = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredNoleggi, setFilteredNoleggi] = useState([]);
 
+    let scadenzeNum = 0;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            let { data, error } = await supabase.from("noleggio").select("*");
+            if (error) console.error("Errore:", error);
+            else setnoleggi(data);
+        };
+
+        fetchData();
+    }, []);
+
     const handleSearch = (e) => {
         e.preventDefault();
 
@@ -23,18 +35,6 @@ const Home = () => {
 
         setFilteredNoleggi(results);
     };
-
-    let scadenzeNum = 0;
-
-    useEffect(() => {
-        const fetchData = async () => {
-            let { data, error } = await supabase.from("noleggio").select("*");
-            if (error) console.error("Errore:", error);
-            else setnoleggi(data);
-        };
-
-        fetchData();
-    }, []);
 
     const displayNoleggi = () => {
         const dataToShow =

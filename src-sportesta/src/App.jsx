@@ -5,6 +5,7 @@ import Archivio from "./pages/Archivio";
 import Noleggio from "./pages/Noleggio";
 import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -74,6 +75,7 @@ function App() {
         <>
             {isLoggedIn ? <Navbar /> : null}
             {renderPage()}
+            <Footer />
         </>
     );
 }

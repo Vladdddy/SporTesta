@@ -1,0 +1,10 @@
+@media (max-width: 900px) {
+    .mobile {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mobile-margin {
+        margin: 0 2vw;
+    }
+}
