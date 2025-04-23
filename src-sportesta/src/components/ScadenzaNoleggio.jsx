@@ -1,15 +1,16 @@
 import React from "react";
 
 const AccordionItem = ({ id, item }) => (
-    <div className="accordion-item border rounded p-2 mb-2">
+    <div className="accordion-item border border-danger rounded p-2 mb-2">
         <h2 className="accordion-header">
             <button
-                className="accordion-button collapsed"
+                className="accordion-button collapsed text-danger"
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target={`#${id}`}
                 aria-expanded="false"
                 aria-controls={id}
+                style={{ borderColor: "#dc3545" }}
             >
                 {item.codice} <span className="ms-3">{item.nomecognome}</span>
             </button>
@@ -43,12 +44,16 @@ const AccordionItem = ({ id, item }) => (
                     <strong>Da:</strong>{" "}
                     {new Date(item.datainizio).toLocaleDateString("it-IT")}
                 </p>
-                <p className="mb-1">
-                    <strong>A:</strong>{" "}
-                    {item.datafine === false || item.datafine == null
-                        ? "(In prestito)"
-                        : new Date(item.datafine).toLocaleDateString("it-IT")}
-                </p>
+                {item.datafine === false || item.datafine == null ? (
+                    <p className="mb-1">
+                        <strong>A:</strong> (In prestito)
+                    </p>
+                ) : (
+                    <p className="mb-1">
+                        <strong>A:</strong>{" "}
+                        {new Date(item.datafine).toLocaleDateString("it-IT")}
+                    </p>
+                )}
 
                 <div className="mb-2">
                     <p className="mb-1">
@@ -77,20 +82,25 @@ const AccordionItem = ({ id, item }) => (
     </div>
 );
 
-const NoleggioAccordion = ({ id, items }) => {
+const NoleggioAccordionOggi = ({ id, items }) => {
+    const today = new Date().toISOString().split("T")[0];
+
     return (
         <div className="accordion accordion-flush" id={id}>
             {items.map((item, index) => {
-                return (
-                    <AccordionItem
-                        key={index}
-                        id={`${id}-item-${index}`}
-                        item={item}
-                    />
-                );
+                const dataFine = item.datafine?.split("T")[0];
+                if (dataFine === today) {
+                    return (
+                        <AccordionItem
+                            key={index}
+                            id={`${id}-item-${index}`}
+                            item={item}
+                        />
+                    );
+                }
             })}
         </div>
     );
 };
 
-export default NoleggioAccordion;
+export default NoleggioAccordionOggi;

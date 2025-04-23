@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import NoleggioAccordion from "../components/NoleggioAccordion";
+import NoleggioAccordionOggi from "../components/ScadenzaNoleggio";
 import "../styles/home.css";
 import { supabase } from "../supabaseClient";
 
 const Home = () => {
     const [noleggi, setnoleggi] = useState([]);
+    let scadenzeNum = 0;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -19,6 +21,19 @@ const Home = () => {
     const displayNoleggi = () => {
         return Array.from({ length: 1 }, (_, i) => (
             <NoleggioAccordion key={i} id={i} items={noleggi} />
+        ));
+    };
+
+    const displayNoleggiOggi = () => {
+        const oggi = new Date().toISOString().split("T")[0];
+        const noleggiScadonoOggi = noleggi.filter(
+            (item) => item.datafine?.split("T")[0] === oggi
+        );
+
+        scadenzeNum = noleggiScadonoOggi.length;
+
+        return Array.from({ length: 1 }, (_, i) => (
+            <NoleggioAccordionOggi key={i} id={i} items={noleggi} />
         ));
     };
 
@@ -65,9 +80,13 @@ const Home = () => {
                     Scadenze di oggi
                 </h2>
 
-                <p style={{ textAlign: "center", color: "gray" }}>
-                    Nessuna scadenza oggi!
-                </p>
+                {displayNoleggiOggi()}
+
+                {scadenzeNum < 1 ? (
+                    <p style={{ textAlign: "center", color: "gray" }}>
+                        Nessuna scadenza oggi!
+                    </p>
+                ) : null}
             </div>
         </section>
     );
