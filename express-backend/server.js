@@ -47,3 +47,9 @@ app.post("/api/login", (req, res) => {
         res.status(401).json({ error: "Credenziali non valide" });
     }
 });
+
+// --Sending data to DB
+app.post("/api/noleggi", async (req, res) => {
+    const dati = req.body;
+    res.status(201).json({ messaggio: "Noleggio salvato!", dati });
+});
