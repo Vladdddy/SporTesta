@@ -6,6 +6,24 @@ import { supabase } from "../supabaseClient";
 
 const Home = () => {
     const [noleggi, setnoleggi] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredNoleggi, setFilteredNoleggi] = useState([]);
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+
+        const results = noleggi.filter((n) => {
+            const fullName = n.nomecognome.toLowerCase();
+            const codiceStr = n.codice.toString();
+            return (
+                fullName.includes(searchTerm.toLowerCase()) ||
+                codiceStr.includes(searchTerm)
+            );
+        });
+
+        setFilteredNoleggi(results);
+    };
+
     let scadenzeNum = 0;
 
     useEffect(() => {
@@ -19,8 +37,11 @@ const Home = () => {
     }, []);
 
     const displayNoleggi = () => {
+        const dataToShow =
+            filteredNoleggi.length > 0 ? filteredNoleggi : noleggi;
+
         return Array.from({ length: 1 }, (_, i) => (
-            <NoleggioAccordion key={i} id={i} items={noleggi} />
+            <NoleggioAccordion key={i} id={i} items={dataToShow} />
         ));
     };
 
@@ -50,17 +71,17 @@ const Home = () => {
                     Noleggi attivi
                 </h2>
                 <form
-                    style={{
-                        marginBottom: "2rem",
-                    }}
-                    className="d-flex"
+                    className="d-flex mb-4"
                     role="search"
+                    onSubmit={handleSearch}
                 >
                     <input
                         className="form-control me-2"
                         type="search"
-                        placeholder="Cerca"
+                        placeholder="Cerca per nome o codice"
                         aria-label="Search"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                     />
                     <button className="btn btn-outline-primary" type="submit">
                         Cerca
