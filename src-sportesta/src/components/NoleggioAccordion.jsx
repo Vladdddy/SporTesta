@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { supabase } from "../supabaseClient";
 import "../styles/noleggio.css";
 
-const AccordionItem = ({ id, item }) => {
+const AccordionItem = ({ id, item, archiviato }) => {
     // eslint-disable-next-line no-unused-vars
     const [pagato, setPagato] = useState(item.pagato ? "si" : "no");
     const [loading, setLoading] = useState(false);
@@ -28,8 +28,51 @@ const AccordionItem = ({ id, item }) => {
         handleArchiviazione();
     };
 
-    const handleArchiviazione = () => {
-        console.log("Noleggio archiviato!");
+    const handleArchiviazione = async () => {
+        setLoading(true);
+
+        const { data, error: fetchError } = await supabase
+            .from("noleggio")
+            .select("*")
+            .eq("codice", item.codice)
+            .single();
+
+        if (fetchError) {
+            console.error("Errore nel recupero del noleggio:", fetchError);
+            setLoading(false);
+            return;
+        }
+
+        console.log(data);
+
+        const { error: insertError } = await supabase
+            .from("noleggioarchiviato")
+            .insert(data);
+
+        if (insertError) {
+            console.error(
+                "Errore nell'inserimento in archiviati:",
+                insertError.message,
+                insertError.details
+            );
+        }
+
+        const { error: deleteError } = await supabase
+            .from("noleggio")
+            .delete()
+            .eq("codice", item.codice);
+
+        if (deleteError) {
+            console.error(
+                "Errore nell'eliminazione del noleggio:",
+                deleteError
+            );
+        } else {
+            console.log("Noleggio archiviato con successo!");
+        }
+
+        setLoading(false);
+        window.location.reload();
     };
 
     const handleUpdatePagato = async (codice, nuovoValore) => {
@@ -114,67 +157,89 @@ const AccordionItem = ({ id, item }) => {
                         <strong>Prezzo:</strong> {item.prezzototale} €
                     </p>
 
-                    <div className="d-flex align-items-center gap-3 mt-3">
-                        <label>
-                            <strong>Pagato:</strong>
-                        </label>
-                        <select
-                            value={item.pagato ? "si" : "no"}
-                            onChange={(e) => {
-                                setPagato(e.target.value);
-                                handleUpdatePagato(item.codice, e.target.value);
+                    {!archiviato ? (
+                        <>
+                            <div className="d-flex align-items-center gap-3 mt-3">
+                                <label>
+                                    <strong>Pagato:</strong>
+                                </label>
+                                <select
+                                    value={item.pagato ? "si" : "no"}
+                                    onChange={(e) => {
+                                        setPagato(e.target.value);
+                                        handleUpdatePagato(
+                                            item.codice,
+                                            e.target.value
+                                        );
+                                    }}
+                                    className="form-select"
+                                    style={{
+                                        width: "100px",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    <option value="si">Si</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            <br />
+                        </>
+                    ) : (
+                        <>
+                            <div className="d-flex align-items-center gap-3 mt-3">
+                                <p className="mb-1">
+                                    <strong>Pagato:</strong>{" "}
+                                    {item.pagato ? "si" : "no"}
+                                </p>
+                            </div>
+                        </>
+                    )}
+
+                    {!archiviato && (
+                        <button
+                            className="btn btn-outline-secondary btn-sm d-flex align-items-center archivia"
+                            disabled={loading}
+                            onClick={handleArchiviaClick}
+                            style={{
+                                backgroundColor: "#ffcd37",
+                                color: "#fff",
+                                borderColor: "#ffcd37",
+                                gap: "10px",
                             }}
-                            className="form-select"
-                            style={{ width: "100px", cursor: "pointer" }}
                         >
-                            <option value="si">Si</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-                    <br />
-                    <button
-                        className="btn btn-outline-secondary btn-sm d-flex align-items-center archivia"
-                        disabled={loading}
-                        onClick={handleArchiviaClick}
-                        style={{
-                            backgroundColor: "#ffcd37",
-                            color: "#fff",
-                            borderColor: "#ffcd37",
-                            gap: "10px",
-                        }}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            width="16"
-                            height="16"
-                            color="#fff"
-                            fill="none"
-                        >
-                            <path
-                                d="M21 7H3V13C3 16.7712 3 18.6569 4.17157 19.8284C5.34315 21 7.22876 21 11 21H13C16.7712 21 18.6569 21 19.8284 19.8284C21 18.6569 21 16.7712 21 13V7Z"
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            ></path>
-                            <path
-                                d="M21 7H3L4.2 5.4C5.08328 4.22229 5.52492 3.63344 6.15836 3.31672C6.7918 3 7.52786 3 9 3H15C16.4721 3 17.2082 3 17.8416 3.31672C18.4751 3.63344 18.9167 4.22229 19.8 5.4L21 7Z"
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            ></path>
-                            <path
-                                d="M12 11L12 17.5M9 13.5C9.58984 12.8932 11.1597 10.5 12 10.5C12.8403 10.5 14.4102 12.8932 15 13.5"
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            ></path>
-                        </svg>
-                        {loading ? "Archivio in corso..." : "Archivia"}
-                    </button>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                width="16"
+                                height="16"
+                                color="#fff"
+                                fill="none"
+                            >
+                                <path
+                                    d="M21 7H3V13C3 16.7712 3 18.6569 4.17157 19.8284C5.34315 21 7.22876 21 11 21H13C16.7712 21 18.6569 21 19.8284 19.8284C21 18.6569 21 16.7712 21 13V7Z"
+                                    stroke="#fff"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                ></path>
+                                <path
+                                    d="M21 7H3L4.2 5.4C5.08328 4.22229 5.52492 3.63344 6.15836 3.31672C6.7918 3 7.52786 3 9 3H15C16.4721 3 17.2082 3 17.8416 3.31672C18.4751 3.63344 18.9167 4.22229 19.8 5.4L21 7Z"
+                                    stroke="#fff"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                ></path>
+                                <path
+                                    d="M12 11L12 17.5M9 13.5C9.58984 12.8932 11.1597 10.5 12 10.5C12.8403 10.5 14.4102 12.8932 15 13.5"
+                                    stroke="#fff"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                ></path>
+                            </svg>
+                            {loading ? "Archivio in corso..." : "Archivia"}
+                        </button>
+                    )}
 
                     {showPopup && (
                         <div
@@ -246,7 +311,7 @@ const AccordionItem = ({ id, item }) => {
     );
 };
 
-const NoleggioAccordion = ({ id, items }) => {
+const NoleggioAccordion = ({ id, items, archiviato }) => {
     return (
         <div className="accordion accordion-flush" id={id}>
             {items.map((item, index) => {
@@ -255,6 +320,7 @@ const NoleggioAccordion = ({ id, items }) => {
                         key={index}
                         id={`${id}-item-${index}`}
                         item={item}
+                        archiviato={archiviato}
                     />
                 );
             })}
