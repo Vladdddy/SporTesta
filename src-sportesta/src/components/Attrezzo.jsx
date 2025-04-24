@@ -126,7 +126,7 @@ const AttrezziForm = () => {
                             field.toLowerCase() === "passo"
                                 ? (() => {
                                       const piede = parseFloat(
-                                          formData.dettagli["numero di piede"]
+                                          formData.dettagli["numero di piede*"]
                                       );
                                       return isNaN(piede)
                                           ? ""
@@ -135,9 +135,9 @@ const AttrezziForm = () => {
                                 : formData.dettagli[field.toLowerCase()] || ""
                         }
                         placeholder={
-                            field.toLowerCase() === "peso"
+                            field.toLowerCase() === "peso*"
                                 ? "kg"
-                                : field.toLowerCase() === "altezza"
+                                : field.toLowerCase() === "altezza*"
                                 ? "cm"
                                 : ""
                         }
@@ -150,9 +150,9 @@ const AttrezziForm = () => {
             case "sci":
                 return commonFields([
                     "Dettagli",
-                    "Altezza",
-                    "Peso",
-                    "Numero di piede",
+                    "Altezza*",
+                    "Peso*",
+                    "Numero di piede*",
                     "Scarponi",
                     "Bastoncini",
                     "Casco",
@@ -160,9 +160,9 @@ const AttrezziForm = () => {
             case "snowboard":
                 return commonFields([
                     "Dettagli",
-                    "Altezza",
-                    "Peso",
-                    "Numero di piede",
+                    "Altezza*",
+                    "Peso*",
+                    "Numero di piede*",
                     "Scarponi",
                     "Bastoncini",
                     "Casco",
@@ -296,7 +296,7 @@ const AttrezziForm = () => {
 
                 <div className="mb-4">
                     <label htmlFor="nome" className="form-label">
-                        Nome e Cognome
+                        Nome e Cognome*
                     </label>
                     <input
                         type="text"
@@ -310,7 +310,7 @@ const AttrezziForm = () => {
 
                 <div className="mb-4">
                     <label htmlFor="codiceFamiglia" className="form-label">
-                        Codice famiglia (se necessario)
+                        Codice famiglia
                     </label>
                     <input
                         type="number"
@@ -323,7 +323,7 @@ const AttrezziForm = () => {
 
                 <div className="mb-4">
                     <label htmlFor="dataInizio" className="form-label">
-                        Data inizio
+                        Data inizio*
                     </label>
                     <input
                         type="date"
@@ -397,7 +397,7 @@ const AttrezziForm = () => {
 
                 <div className="mb-4">
                     <label htmlFor="prezzo" className="form-label">
-                        Prezzo
+                        Prezzo*
                     </label>
                     <input
                         type="number"
