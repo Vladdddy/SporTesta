@@ -12,6 +12,7 @@ const AttrezziForm = () => {
         dataInizio: "",
         dataFine: "",
         tipoNoleggio: "",
+        codiceFamiglia: "",
         dettagli: {},
     });
 
@@ -23,7 +24,15 @@ const AttrezziForm = () => {
             setFormData((prev) => ({ ...prev, attrezzo: value }));
         } else if (name === "tipoCliente") {
             setFormData((prev) => ({ ...prev, tipoCliente: value }));
-        } else if (["nome", "prezzo", "dataInizio", "dataFine"].includes(id)) {
+        } else if (
+            [
+                "nome",
+                "prezzo",
+                "dataInizio",
+                "dataFine",
+                "codiceFamiglia",
+            ].includes(id)
+        ) {
             setFormData((prev) => ({ ...prev, [id]: value }));
         } else {
             setFormData((prev) => ({
@@ -54,6 +63,7 @@ const AttrezziForm = () => {
             pagato: false,
             datainizio: formData.dataInizio,
             datafine: formData.dataFine,
+            codicefamiglia: formData.codiceFamiglia,
             tiponoleggio: formData.tipoNoleggio,
         };
 
@@ -78,6 +88,7 @@ const AttrezziForm = () => {
     Attrezzo: ${formData.attrezzo}
     Data Inizio: ${formData.dataInizio}
     Data Fine: ${formData.dataFine}
+    Codice Famiglia: ${formData.codiceFamiglia}
     Prezzo: ${formData.prezzo}€
     
     [Dettagli noleggio]
@@ -111,7 +122,25 @@ const AttrezziForm = () => {
                         className="form-control"
                         id={field.toLowerCase()}
                         onChange={handleChange}
-                        value={formData.dettagli[field.toLowerCase()] || ""}
+                        value={
+                            field.toLowerCase() === "passo"
+                                ? (() => {
+                                      const piede = parseFloat(
+                                          formData.dettagli["numero di piede"]
+                                      );
+                                      return isNaN(piede)
+                                          ? ""
+                                          : (piede / Math.PI).toFixed(2);
+                                  })()
+                                : formData.dettagli[field.toLowerCase()] || ""
+                        }
+                        placeholder={
+                            field.toLowerCase() === "peso"
+                                ? "kg"
+                                : field.toLowerCase() === "altezza"
+                                ? "cm"
+                                : ""
+                        }
                         required
                     />
                 </div>
@@ -276,6 +305,19 @@ const AttrezziForm = () => {
                         onChange={handleChange}
                         value={formData.nome}
                         required
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="codiceFamiglia" className="form-label">
+                        Codice famiglia (se necessario)
+                    </label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="codiceFamiglia"
+                        onChange={handleChange}
+                        value={formData.codiceFamiglia}
                     />
                 </div>
 

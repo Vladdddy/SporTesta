@@ -27,9 +27,12 @@ const Home = () => {
         const results = noleggi.filter((n) => {
             const fullName = n.nomecognome.toLowerCase();
             const codiceStr = n.codice.toString();
+            const codiceFam =
+                n.codicefamiglia != null ? n.codicefamiglia.toString() : "";
             return (
                 fullName.includes(searchTerm.toLowerCase()) ||
-                codiceStr.includes(searchTerm)
+                codiceStr.includes(searchTerm) ||
+                codiceFam.includes(searchTerm)
             );
         });
 

@@ -3,6 +3,7 @@ import { supabase } from "../supabaseClient";
 import "../styles/noleggio.css";
 
 const AccordionItem = ({ id, item }) => {
+    // eslint-disable-next-line no-unused-vars
     const [pagato, setPagato] = useState(item.pagato ? "si" : "no");
     const [loading, setLoading] = useState(false);
 
@@ -31,14 +32,13 @@ const AccordionItem = ({ id, item }) => {
         console.log("Noleggio archiviato!");
     };
 
-    const handleUpdatePagato = async () => {
+    const handleUpdatePagato = async (codice, nuovoValore) => {
         setLoading(true);
-        const nuovoValore = pagato === "si";
 
         const { error } = await supabase
             .from("noleggio")
-            .update({ pagato: nuovoValore })
-            .eq("codice", item.codice);
+            .update({ pagato: nuovoValore === "si" })
+            .eq("codice", codice);
 
         if (error) {
             console.error("Errore aggiornamento pagato:", error);
@@ -72,7 +72,6 @@ const AccordionItem = ({ id, item }) => {
                 data-bs-parent={`#${item.codice}`}
             >
                 <div className="accordion-body p-3">
-                    {/* Attrezzo */}
                     <p className="mb-1">
                         <strong>Attrezzo:</strong>{" "}
                         {
@@ -104,6 +103,12 @@ const AccordionItem = ({ id, item }) => {
                     <p className="mb-1">
                         <strong>Tipo noleggio:</strong> {item.tiponoleggio}
                     </p>
+                    <p className="mb-1">
+                        <strong>Codice famiglia:</strong>{" "}
+                        {item.codicefamiglia == null
+                            ? "NaN"
+                            : item.codicefamiglia}
+                    </p>
 
                     <p className="mb-1">
                         <strong>Prezzo:</strong> {item.prezzototale} €
@@ -114,37 +119,17 @@ const AccordionItem = ({ id, item }) => {
                             <strong>Pagato:</strong>
                         </label>
                         <select
-                            value={pagato}
-                            onChange={(e) => setPagato(e.target.value)}
+                            value={item.pagato ? "si" : "no"}
+                            onChange={(e) => {
+                                setPagato(e.target.value);
+                                handleUpdatePagato(item.codice, e.target.value);
+                            }}
                             className="form-select"
                             style={{ width: "100px", cursor: "pointer" }}
                         >
                             <option value="si">Si</option>
                             <option value="no">No</option>
                         </select>
-                        <button
-                            className="btn btn-success btn-sm d-flex align-items-center"
-                            onClick={handleUpdatePagato}
-                            disabled={loading}
-                            style={{ gap: "10px" }}
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="lucide lucide-rotate-cw-icon lucide-rotate-cw"
-                            >
-                                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-                                <path d="M21 3v5h-5" />
-                            </svg>
-                            {loading ? "Salvando..." : "Aggiorna"}
-                        </button>
                     </div>
                     <br />
                     <button

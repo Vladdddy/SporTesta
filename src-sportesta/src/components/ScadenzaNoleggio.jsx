@@ -63,6 +63,10 @@ const AccordionItem = ({ id, item }) => (
                         <strong>Tipo noleggio:</strong> {item.tiponoleggio}
                     </p>
                 </div>
+                <p className="mb-1">
+                    <strong>Codice famiglia:</strong>{" "}
+                    {item.codicefamiglia == null ? "NaN" : item.codicefamiglia}
+                </p>
 
                 <p className="mb-1">
                     <strong>Prezzo:</strong> {item.prezzototale} €
