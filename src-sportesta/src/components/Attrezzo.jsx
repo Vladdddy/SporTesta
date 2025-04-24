@@ -118,7 +118,17 @@ const AttrezziForm = () => {
                         {field}
                     </label>
                     <input
-                        type="text"
+                        type={
+                            field.toLowerCase() === "altezza*"
+                                ? "number"
+                                : field.toLowerCase() === "peso*"
+                                ? "number"
+                                : field.toLowerCase() === "numero di piede*"
+                                ? "number"
+                                : field.toLowerCase() === "passo"
+                                ? "number"
+                                : "text"
+                        }
                         className="form-control"
                         id={field.toLowerCase()}
                         onChange={handleChange}
@@ -308,18 +318,20 @@ const AttrezziForm = () => {
                     />
                 </div>
 
-                <div className="mb-4">
-                    <label htmlFor="codiceFamiglia" className="form-label">
-                        Codice famiglia
-                    </label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="codiceFamiglia"
-                        onChange={handleChange}
-                        value={formData.codiceFamiglia}
-                    />
-                </div>
+                {formData.tipoNoleggio === "famiglia" && (
+                    <div className="mb-4">
+                        <label htmlFor="codiceFamiglia" className="form-label">
+                            Codice famiglia*
+                        </label>
+                        <input
+                            type="number"
+                            className="form-control"
+                            id="codiceFamiglia"
+                            onChange={handleChange}
+                            value={formData.codiceFamiglia}
+                        />
+                    </div>
+                )}
 
                 <div className="mb-4">
                     <label htmlFor="dataInizio" className="form-label">

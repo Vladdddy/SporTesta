@@ -57,7 +57,7 @@ const Home = () => {
         scadenzeNum = noleggiScadonoOggi.length;
 
         return Array.from({ length: 1 }, (_, i) => (
-            <NoleggioAccordionOggi key={i} id={i} items={noleggi} />
+            <NoleggioAccordionOggi key={i + 100} id={i + 100} items={noleggi} />
         ));
     };
 
