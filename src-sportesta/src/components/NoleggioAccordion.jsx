@@ -186,8 +186,8 @@ const AccordionItem = ({ id, item, archiviato }) => {
                         </>
                     ) : (
                         <>
-                            <div className="d-flex align-items-center gap-3 mt-3">
-                                <p className="mb-1">
+                            <div className="d-flex align-items-center gap-3">
+                                <p>
                                     <strong>Pagato:</strong>{" "}
                                     {item.pagato ? "si" : "no"}
                                 </p>
