@@ -24,6 +24,7 @@ const Home = () => {
     const handleSearch = (e) => {
         e.preventDefault();
 
+        // -Filtraggio dei noleggi
         const results = noleggi.filter((n) => {
             const fullName = n.nomecognome.toLowerCase();
             const codiceStr = n.codice.toString();
