@@ -2,7 +2,9 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const app = express();
 const cors = require("cors");
-const SECRET_KEY = "your_secret_key";
+require("dotenv").config();
+
+const SECRET_KEY = process.env.SECRET_KEY;
 
 app.use(express.json());
 
@@ -40,7 +42,10 @@ app.get("/", (req, res) => {
 app.post("/api/login", (req, res) => {
     const { username, password } = req.body;
 
-    if (username === "admin" && password === "password123") {
+    if (
+        username === process.env.ADMIN_USERNAME &&
+        password === process.env.ADMIN_PASSWORD
+    ) {
         const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "20h" });
         res.json({ token });
     } else {
