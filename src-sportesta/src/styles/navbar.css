@@ -1,0 +1,7 @@
+.custom-color {
+    color: #000;
+
+    &:hover {
+        color: #263d9b;
+    }
+}

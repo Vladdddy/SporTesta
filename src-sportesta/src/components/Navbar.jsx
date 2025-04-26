@@ -1,5 +1,6 @@
 import React from "react";
 import image from "../assets/sportesta-logo.png";
+import "../styles/navbar.css";
 
 const Navbar = () => {
     const setType = (type) => {
@@ -29,7 +30,7 @@ const Navbar = () => {
                     <li className="nav-item">
                         <a
                             onClick={() => setType("noleggio")}
-                            className="nav-link"
+                            className="nav-link custom-color"
                         >
                             Compila noleggio
                         </a>
@@ -37,7 +38,7 @@ const Navbar = () => {
                     <li className="nav-item">
                         <a
                             onClick={() => setType("archivio")}
-                            className="nav-link"
+                            className="nav-link custom-color"
                         >
                             Archivi
                         </a>

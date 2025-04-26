@@ -63,7 +63,9 @@ const AttrezziForm = () => {
             pagato: false,
             datainizio: formData.dataInizio,
             datafine: formData.dataFine,
-            codicefamiglia: formData.codiceFamiglia,
+            codicefamiglia: formData.codiceFamiglia
+                ? parseInt(formData.codiceFamiglia)
+                : 0,
             tiponoleggio: formData.tipoNoleggio,
         };
 
@@ -80,29 +82,85 @@ const AttrezziForm = () => {
                 return;
             }
 
+            const { data, errorCodice } = await supabase
+                .from("noleggio")
+                .select("*")
+                .order("codice", { ascending: false })
+                .limit(1)
+                .single();
+
+            if (errorCodice) {
+                console.error("Errore durante l'inserimento:", error);
+                return;
+            }
+
+            const codiceGenerato = data.codice;
+
             console.log("Noleggio salvato con successo!");
 
-            const ricevuta = `
-    Cliente: ${formData.nome}
-    Tipo Cliente: ${formData.tipoCliente}
-    Attrezzo: ${formData.attrezzo}
-    Data Inizio: ${formData.dataInizio}
-    Data Fine: ${formData.dataFine}
-    Codice Famiglia: ${formData.codiceFamiglia}
-    Prezzo: ${formData.prezzo}€
-    
-    [Dettagli noleggio]
-    ${Object.entries(formData.dettagli)
-        .map(([key, val]) => `${key}: ${val}`)
-        .join("\n")}
-            `.trim();
+            const ricevutaHtml = `
+    <html>
+        <head>
+            <title>Ricevuta</title>
+            <style>
+                .info-aziendali {
+                    text-align: center;
+                    line-height: 1.2;
+                }
+            </style>
+        </head>
+        <body>
+        <div style="display: flex; flex-direction: row; justify-content: space-evenly; align-items: center">
+            <img style="width: 150px" src="/sportesta-logo.png" alt="logo">
+            <h4>21013 Gallarate, Via Pegoraro, 18 Cell: 340 141 7605   Cell: 348 925 1148</h4>
+        </div>
 
-            const blob = new Blob([ricevuta], { type: "text/plain" });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "ricevuta.txt";
-            link.click();
+            <br />
+            <div style="display: flex; flex-direction: row; justify-content: space-evenly; align-items: center">
+                <h2 style="font-weight: 400">Cliente: ${formData.nome}</h2>    
+                <h2 style="font-weight: 400">Codice: ${codiceGenerato}</h2>
+            </div>
+            <br />
+
+            <div style="display: flex; flex-direction: row; justify-content: space-evenly; align-items: center; font-weight: 300">
+<h2 style="font-weight: 400">Data Inizio: ${new Date(
+                formData.dataInizio
+            ).toLocaleDateString("it-IT")}</h2>
+            <h2 style="font-weight: 400">Data Fine: ${new Date(
+                formData.dataFine
+            ).toLocaleDateString("it-IT")}</h2>
+            </div>
+            
+            <p style="text-align: center; font-size: 30px">Prezzo: €${
+                formData.prezzo
+            }</p>
+            <br />
+            <div class="info-aziendali">
+                <h4>SPORTESTA di Banfi Alessandro</h4>
+                <p>Via Pegoraro, 18 - 21013 GALLARATE (VA)</p>
+                <p>Cod. Fisc.: BNFLSN76D24I819W - P.IVA 03732390129</p>
+                <p>Pec: testasport@sicurezzapostale.it</p>
+            </div>
+            <br />
+            <h6>
+                I danni causati da un uso improprio dell'attrezzo avuto in noleggio saranno considerati a costo di mercato. 
+                Chi noleggia è responsabile dell'oggetto avuto in uso. Alla scadenza del periodo prenotato, la consegna del materiale 
+                avuto in noleggio, deve avvenire alla data convenuta (salvo comunicazioni) altrimenti saranno addebitati i giorni di 
+                ritardo a prezzo di listino.
+            </h6>
+            <script>
+                window.onload = function() {
+                    window.print();
+                    window.close();
+                };
+            </script>
+        </body>
+    </html>
+`;
+
+            const printWindow = window.open("", "_blank");
+            printWindow.document.write(ricevutaHtml);
+            printWindow.document.close();
         } catch (error) {
             console.error("Errore durante il salvataggio:", error);
         }
@@ -136,7 +194,7 @@ const AttrezziForm = () => {
                             field.toLowerCase() === "passo"
                                 ? (() => {
                                       const piede = parseFloat(
-                                          formData.dettagli["numero di piede*"]
+                                          formData.dettagli["altezza*"]
                                       );
                                       return isNaN(piede)
                                           ? ""
@@ -424,7 +482,7 @@ const AttrezziForm = () => {
 
                 <br />
 
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="btn btn-custom">
                     Salva e scarica ricevuta
                 </button>
             </form>

@@ -1,6 +1,44 @@
 .archivia:hover {
-    background-color: #e5ae08 !important;
-    border-color: #e5ae08 !important;
+    background-color: #263d9b !important;
+    border-color: #263d9b !important;
+}
+
+.indietro-wrapper {
+    display: flex;
+    margin-left: 4vw;
+
+    & svg {
+        color: #1a2c74;
+    }
+}
+
+.btn-custom {
+    background-color: #1a2c74 !important;
+    color: #fff !important;
+
+    &:hover {
+        background-color: #263d9b !important;
+    }
+}
+
+.indietro-button {
+    background-color: transparent;
+    font-size: 1.2rem;
+    border: 2px solid #1a2c74;
+    padding: 0.6rem 1.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: "Montserrat", sans-serif;
+    transition: all 0.3s ease;
+}
+
+.indietro-button:hover {
+    background-color: #1a2c74;
+
+    & svg {
+        color: #fff;
+    }
 }
 
 @media (max-width: 900px) {
@@ -11,5 +49,10 @@
 
     .mobile-margin {
         margin: 0 2vw;
+    }
+
+    .indietro-wrapper {
+        display: flex;
+        margin-left: 2vw;
     }
 }

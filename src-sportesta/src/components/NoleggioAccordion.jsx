@@ -148,13 +148,13 @@ const AccordionItem = ({ id, item, archiviato }) => {
                     </p>
                     <p className="mb-1">
                         <strong>Codice famiglia:</strong>{" "}
-                        {item.codicefamiglia == null
-                            ? "NaN"
+                        {item.codicefamiglia == null || item.codicefamiglia == 0
+                            ? "Nessuno"
                             : item.codicefamiglia}
                     </p>
 
                     <p className="mb-1">
-                        <strong>Prezzo:</strong> {item.prezzototale} €
+                        <strong>Prezzo:</strong> € {item.prezzototale}
                     </p>
 
                     {!archiviato ? (
@@ -201,9 +201,9 @@ const AccordionItem = ({ id, item, archiviato }) => {
                             disabled={loading}
                             onClick={handleArchiviaClick}
                             style={{
-                                backgroundColor: "#ffcd37",
+                                backgroundColor: "#1a2c74",
                                 color: "#fff",
-                                borderColor: "#ffcd37",
+                                borderColor: "#1a2c74",
                                 gap: "10px",
                             }}
                         >

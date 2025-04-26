@@ -19,3 +19,62 @@
         margin: 0 2vw;
     }
 }
+
+#calc-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #1a2c74;
+    color: white;
+    border: none;
+    border-radius: 100%;
+    padding: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+}
+
+#calc-popup {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 240px;
+    padding: 15px;
+    background: white;
+    border: 2px solid #1a2c74;
+    border-radius: 10px;
+    display: none;
+    z-index: 9999;
+}
+
+#calc-popup input {
+    width: 100%;
+    font-size: 24px;
+    margin-bottom: 10px;
+    padding: 5px;
+    text-align: right;
+}
+
+.calc-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.calc-row button {
+    width: 25%;
+    padding: 10px;
+    font-size: 18px;
+    margin: 2px;
+    cursor: pointer;
+}
+
+/* Sovrascrivi la classe btn-outline-primary per il colore personalizzato */
+.btn-outline-custom {
+    color: #1a2c74 !important; /* Colore del testo */
+    border-color: #1a2c74 !important; /* Colore del bordo */
+}
+
+.btn-outline-custom:hover {
+    background-color: #1a2c74 !important; /* Colore di sfondo al passaggio del mouse */
+    color: white !important; /* Colore del testo al passaggio del mouse */
+}

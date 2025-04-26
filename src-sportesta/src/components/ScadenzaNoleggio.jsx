@@ -65,7 +65,9 @@ const AccordionItem = ({ id, item }) => (
                 </div>
                 <p className="mb-1">
                     <strong>Codice famiglia:</strong>{" "}
-                    {item.codicefamiglia == null ? "NaN" : item.codicefamiglia}
+                    {item.codicefamiglia == null || item.codicefamiglia == 0
+                        ? "Nessuno"
+                        : item.codicefamiglia}
                 </p>
 
                 <p className="mb-1">
