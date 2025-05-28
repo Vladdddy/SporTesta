@@ -55,6 +55,14 @@ const AccordionItem = ({ id, item }) => (
                     </p>
                 )}
 
+                <p className="mb-1">
+                    <strong>Telefono:</strong> {item.telefono}
+                </p>
+                <p className="mb-1">
+                    <strong>Email:</strong>{" "}
+                    {item.email == null ? "(Non fornita)" : item.email}
+                </p>
+
                 <div className="mb-2">
                     <p className="mb-1">
                         <strong>Tipo cliente:</strong> {item.tipocliente}
