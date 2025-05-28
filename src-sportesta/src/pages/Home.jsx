@@ -43,6 +43,7 @@ const Home = () => {
     const [noleggi, setnoleggi] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredNoleggi, setFilteredNoleggi] = useState([]);
+    const [showNoResultsPopup, setShowNoResultsPopup] = useState(false);
 
     let scadenzeNum = 0;
 
@@ -65,14 +66,29 @@ const Home = () => {
             const codiceStr = n.codice.toString();
             const codiceFam =
                 n.codicefamiglia != null ? n.codicefamiglia.toString() : "";
-            return (
-                fullName.includes(searchTerm.toLowerCase()) ||
-                codiceStr.includes(searchTerm) ||
-                codiceFam.includes(searchTerm)
-            );
+
+            const nameMatch = fullName.includes(searchTerm.toLowerCase());
+
+            const isNumericSearch = /^\d+$/.test(searchTerm);
+            if (isNumericSearch) {
+                const exactCodeMatch = codiceStr === searchTerm;
+                const exactFamMatch = codiceFam === searchTerm;
+                return nameMatch || exactCodeMatch || exactFamMatch;
+            } else {
+                return (
+                    nameMatch ||
+                    codiceStr.includes(searchTerm) ||
+                    codiceFam.includes(searchTerm)
+                );
+            }
         });
 
         setFilteredNoleggi(results);
+
+        // Show popup if no results found and search term is not empty
+        if (results.length === 0 && searchTerm.trim() !== "") {
+            setShowNoResultsPopup(true);
+        }
     };
 
     const displayNoleggi = () => {
@@ -241,6 +257,37 @@ const Home = () => {
                     </button>
                 </div>
             </div>
+
+            {/* Popup for no search results */}
+            {showNoResultsPopup && (
+                <div
+                    className="modal modal-sheet position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center"
+                    tabIndex="-1"
+                    role="dialog"
+                    style={{ zIndex: 1050 }}
+                >
+                    <div className="modal-dialog">
+                        <div className="modal-content rounded-3 shadow">
+                            <div className="modal-body p-4 text-center">
+                                <h5 className="mb-3">Noleggio non esistente</h5>
+                                <p className="text-secondary">
+                                    Non è stato trovato nessun noleggio con i
+                                    criteri di ricerca inseriti.
+                                </p>
+                            </div>
+                            <div className="modal-footer flex-nowrap p-0">
+                                <button
+                                    type="button"
+                                    className="btn btn-lg btn-link fs-6 text-decoration-none col-12 py-3 m-0 rounded-0"
+                                    onClick={() => setShowNoResultsPopup(false)}
+                                >
+                                    OK
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </section>
     );
 };

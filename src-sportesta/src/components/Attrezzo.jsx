@@ -27,6 +27,8 @@ const AttrezziForm = () => {
         } else if (
             [
                 "nome",
+                "telefono",
+                "email",
                 "prezzo",
                 "dataInizio",
                 "dataFine",
@@ -58,14 +60,14 @@ const AttrezziForm = () => {
         const dataToSend = {
             attrezzoid: attrezzoMap[formData.attrezzo],
             nomecognome: formData.nome,
+            telefono: formData.telefono,
+            email: formData.email,
             tipocliente: formData.tipoCliente,
             prezzototale: parseFloat(formData.prezzo),
             pagato: false,
             datainizio: formData.dataInizio,
             datafine: formData.dataFine,
-            codicefamiglia: formData.codiceFamiglia
-                ? parseInt(formData.codiceFamiglia)
-                : 0,
+            codicefamiglia: formData.codiceFamiglia || null,
             tiponoleggio: formData.tipoNoleggio,
         };
 
@@ -99,63 +101,346 @@ const AttrezziForm = () => {
             console.log("Noleggio salvato con successo!");
 
             const ricevutaHtml = `
-    <html>
-        <head>
-            <title>Ricevuta</title>
-            <style>
-                .info-aziendali {
-                    text-align: center;
-                    line-height: 1.2;
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ricevuta Noleggio - SPORTESTA</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'Arial', sans-serif;
+                line-height: 1.4;
+                color: #333;
+                background: white;
+                padding: 20px;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            
+            .receipt-container {
+                border: 2px solid #2c5aa0;
+                border-radius: 10px;
+                padding: 30px;
+                background: #fafafa;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+            
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-bottom: 20px;
+                border-bottom: 3px solid #2c5aa0;
+                margin-bottom: 25px;
+            }
+            
+            .logo {
+                width: 120px;
+                height: auto;
+            }
+            
+            .company-info {
+                text-align: right;
+                color: #2c5aa0;
+                font-weight: 600;
+            }
+            
+            .company-info h3 {
+                font-size: 16px;
+                margin-bottom: 5px;
+            }
+            
+            .receipt-title {
+                text-align: center;
+                background: linear-gradient(135deg, #2c5aa0, #4a7bc8);
+                color: white;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                font-size: 24px;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            
+            .info-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                margin-bottom: 25px;
+            }
+            
+            .info-card {
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                border-left: 4px solid #2c5aa0;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            
+            .info-label {
+                font-weight: bold;
+                color: #2c5aa0;
+                font-size: 14px;
+                text-transform: uppercase;
+                margin-bottom: 5px;
+            }
+            
+            .info-value {
+                font-size: 16px;
+                color: #333;
+                font-weight: 500;
+            }
+            
+            .date-section {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                margin: 25px 0;
+            }
+            
+            .equipment-details {
+                background: #f8f9fa;
+                border: 2px solid #e9ecef;
+                border-radius: 10px;
+                padding: 20px;
+                margin: 25px 0;
+            }
+            
+            .equipment-title {
+                text-align: center;
+                color: #2c5aa0;
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 15px;
+                text-transform: uppercase;
+            }
+            
+            .equipment-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border-bottom: 1px solid #dee2e6;
+            }
+            
+            .equipment-item:last-child {
+                border-bottom: none;
+            }
+            
+            .equipment-label {
+                font-weight: 600;
+                color: #495057;
+            }
+            
+            .equipment-value {
+                color: #212529;
+                font-weight: 500;
+            }
+            
+            .total-amount {
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                text-align: center;
+                margin: 25px 0;
+                box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+            }
+            
+            .total-amount h2 {
+                font-size: 28px;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            
+            .company-details {
+                background: white;
+                border: 2px solid #2c5aa0;
+                border-radius: 8px;
+                padding: 20px;
+                text-align: center;
+                margin: 25px 0;
+            }
+            
+            .company-details h4 {
+                color: #2c5aa0;
+                font-size: 18px;
+                margin-bottom: 10px;
+                font-weight: bold;
+            }
+            
+            .company-details p {
+                margin: 5px 0;
+                color: #495057;
+                font-size: 14px;
+            }
+            
+            .terms {
+                background: #fff3cd;
+                border: 1px solid #ffeaa7;
+                border-radius: 6px;
+                padding: 15px;
+                margin-top: 25px;
+                font-size: 12px;
+                line-height: 1.5;
+                color: #856404;
+            }
+            
+            .terms h5 {
+                color: #d63384;
+                margin-bottom: 10px;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+            
+            @media print {
+                body {
+                    margin: 0;
+                    padding: 10px;
                 }
-            </style>
-        </head>
-        <body>
-        <div style="display: flex; flex-direction: row; justify-content: space-evenly; align-items: center">
-            <img style="width: 150px" src="/sportesta-logo.png" alt="logo">
-            <h4>21013 Gallarate, Via Pegoraro, 18 Cell: 340 141 7605   Cell: 348 925 1148</h4>
-        </div>
-
-            <br />
-            <div style="display: flex; flex-direction: row; justify-content: space-evenly; align-items: center">
-                <h2 style="font-weight: 400">Cliente: ${formData.nome}</h2>    
-                <h2 style="font-weight: 400">Codice: ${codiceGenerato}</h2>
-            </div>
-            <br />
-
-            <div style="display: flex; flex-direction: row; justify-content: space-evenly; align-items: center; font-weight: 300">
-<h2 style="font-weight: 400">Data Inizio: ${new Date(
-                formData.dataInizio
-            ).toLocaleDateString("it-IT")}</h2>
-            <h2 style="font-weight: 400">Data Fine: ${new Date(
-                formData.dataFine
-            ).toLocaleDateString("it-IT")}</h2>
+                
+                .receipt-container {
+                    border: 1px solid #333;
+                    box-shadow: none;
+                    padding: 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="receipt-container">
+            <div class="header">
+                <img class="logo" src="/sportesta-logo.png" alt="SPORTESTA Logo">
+                <div class="company-info">
+                    <h3>SPORTESTA</h3>
+                    <div>21013 Gallarate, Via Pegoraro, 18</div>
+                    <div>Cell: 340 141 7605 - Cell: 348 925 1148</div>
+                </div>
             </div>
             
-            <p style="text-align: center; font-size: 30px">Prezzo: €${
-                formData.prezzo
-            }</p>
-            <br />
-            <div class="info-aziendali">
+            <div class="receipt-title">
+                Ricevuta di Noleggio
+            </div>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-label">Cliente</div>
+                    <div class="info-value">${formData.nome}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Codice Noleggio</div>
+                    <div class="info-value">#${codiceGenerato}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Telefono</div>
+                    <div class="info-value">${formData.telefono}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">${
+                        formData.email || "Non fornita"
+                    }</div>
+                </div>
+            </div>
+            
+            <div class="date-section">
+                <div class="info-card">
+                    <div class="info-label">Data Inizio Noleggio</div>
+                    <div class="info-value">${new Date(
+                        formData.dataInizio
+                    ).toLocaleDateString("it-IT")}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Data Fine Noleggio</div>
+                    <div class="info-value">${new Date(
+                        formData.dataFine
+                    ).toLocaleDateString("it-IT")}</div>
+                </div>
+            </div>
+            
+            ${(() => {
+                const dettagliFields = [
+                    "dettagliSci",
+                    "altezzaSci",
+                    "dettagliSnowboard",
+                    "altezzaSnowboard",
+                    "dettagli",
+                    "altezzaPersona",
+                    "pesoPersona",
+                    "scarponi",
+                    "bastoncini",
+                    "casco",
+                    "giacca",
+                    "pantalone",
+                    "taglia",
+                    "passo",
+                ];
+                const dettagliPresenti = dettagliFields.filter(
+                    (field) =>
+                        formData.dettagli[field] &&
+                        formData.dettagli[field].trim() !== ""
+                );
+
+                if (dettagliPresenti.length === 0) return "";
+
+                return `
+                <div class="equipment-details">
+                    <div class="equipment-title">Dettagli Attrezzatura</div>
+                    ${dettagliPresenti
+                        .map((field) => {
+                            // Convert camelCase to readable format
+                            const fieldName = field
+                                .replace(/([A-Z])/g, " $1")
+                                .replace(/^./, (str) => str.toUpperCase())
+                                .replace(/sci/i, "Sci")
+                                .replace(/snowboard/i, "Snowboard")
+                                .replace(/persona/i, "Persona");
+                            return `<div class="equipment-item">
+                            <span class="equipment-label">${fieldName}:</span>
+                            <span class="equipment-value">${formData.dettagli[field]}</span>
+                        </div>`;
+                        })
+                        .join("")}
+                </div>`;
+            })()}
+            
+            <div class="total-amount">
+                <h2>Importo Versato: €${formData.prezzo}</h2>
+            </div>
+            
+            <div class="company-details">
                 <h4>SPORTESTA di Banfi Alessandro</h4>
                 <p>Via Pegoraro, 18 - 21013 GALLARATE (VA)</p>
                 <p>Cod. Fisc.: BNFLSN76D24I819W - P.IVA 03732390129</p>
-                <p>Pec: testasport@sicurezzapostale.it</p>
+                <p>PEC: testasport@sicurezzapostale.it</p>
             </div>
-            <br />
-            <h6>
+            
+            <div class="terms">
+                <h5>⚠️ Termini e Condizioni</h5>
                 I danni causati da un uso improprio dell'attrezzo avuto in noleggio saranno considerati a costo di mercato. 
                 Chi noleggia è responsabile dell'oggetto avuto in uso. Alla scadenza del periodo prenotato, la consegna del materiale 
-                avuto in noleggio, deve avvenire alla data convenuta (salvo comunicazioni) altrimenti saranno addebitati i giorni di 
+                avuto in noleggio deve avvenire alla data convenuta (salvo comunicazioni), altrimenti saranno addebitati i giorni di 
                 ritardo a prezzo di listino.
-            </h6>
-            <script>
-                window.onload = function() {
-                    window.print();
-                    window.close();
-                };
-            </script>
-        </body>
-    </html>
+            </div>
+        </div>
+        
+        <script>
+            window.onload = function() {
+                window.print();
+                window.close();
+            };
+        </script>
+    </body>
+</html>
 `;
 
             const printWindow = window.open("", "_blank");
@@ -170,67 +455,102 @@ const AttrezziForm = () => {
 
     const renderInputs = () => {
         const commonFields = (fields) =>
-            fields.map((field, index) => (
-                <div className="mb-4 mobile" key={index}>
-                    <label htmlFor={field.toLowerCase()} className="form-label">
-                        {field}
-                    </label>
-                    <input
-                        type={
-                            field.toLowerCase() === "altezza*"
-                                ? "number"
-                                : field.toLowerCase() === "peso*"
-                                ? "number"
-                                : field.toLowerCase() === "numero di piede*"
-                                ? "number"
-                                : field.toLowerCase() === "passo"
-                                ? "number"
-                                : "text"
-                        }
-                        className="form-control"
-                        id={field.toLowerCase()}
-                        onChange={handleChange}
-                        value={
-                            field.toLowerCase() === "passo"
-                                ? (() => {
-                                      const piede = parseFloat(
-                                          formData.dettagli["altezza*"]
-                                      );
-                                      return isNaN(piede)
-                                          ? ""
-                                          : (piede / Math.PI).toFixed(2);
-                                  })()
-                                : formData.dettagli[field.toLowerCase()] || ""
-                        }
-                        placeholder={
-                            field.toLowerCase() === "peso*"
-                                ? "kg"
-                                : field.toLowerCase() === "altezza*"
-                                ? "cm"
-                                : ""
-                        }
-                        required
-                    />
-                </div>
-            ));
+            fields.map((field, index) => {
+                // Convert display name to camelCase for id
+                const fieldId = field
+                    .toLowerCase()
+                    .replace(/\s+/g, "")
+                    .replace(/\*/g, "*")
+                    .replace(/^dettaglisci$/, "dettagliSci")
+                    .replace(/^altezzasci$/, "altezzaSci")
+                    .replace(/^dettaglisnowboard$/, "dettagliSnowboard")
+                    .replace(/^altezzasnowboard$/, "altezzaSnowboard")
+                    .replace(/^altezzapersona$/, "altezzaPersona")
+                    .replace(/^pesopersona$/, "pesoPersona")
+                    .replace(/^numerodipiede\*$/, "numeroDiPiede*")
+                    .replace(/^scarponi$/, "scarponi")
+                    .replace(/^bastoncini$/, "bastoncini")
+                    .replace(/^casco$/, "casco")
+                    .replace(/^passo$/, "passo")
+                    .replace(/^dettagli$/, "dettagli")
+                    .replace(/^giacca$/, "giacca")
+                    .replace(/^pantalone$/, "pantalone")
+                    .replace(/^taglia$/, "taglia");
+
+                return (
+                    <div className="mb-4 mobile" key={index}>
+                        <label htmlFor={fieldId} className="form-label">
+                            {field}
+                        </label>
+                        <input
+                            type={
+                                fieldId === "altezzaPersona"
+                                    ? "number"
+                                    : fieldId === "pesoPersona"
+                                    ? "number"
+                                    : fieldId === "numeroDiPiede*"
+                                    ? "number"
+                                    : fieldId === "altezzaSci"
+                                    ? "number"
+                                    : fieldId === "altezzaSnowboard"
+                                    ? "number"
+                                    : fieldId === "passo"
+                                    ? "number"
+                                    : "text"
+                            }
+                            className="form-control"
+                            id={fieldId}
+                            onChange={handleChange}
+                            value={
+                                fieldId === "passo"
+                                    ? (() => {
+                                          const piede = parseFloat(
+                                              formData.dettagli[
+                                                  "altezzaPersona"
+                                              ]
+                                          );
+                                          return isNaN(piede)
+                                              ? ""
+                                              : (piede / Math.PI).toFixed(2);
+                                      })()
+                                    : formData.dettagli[fieldId] || ""
+                            }
+                            placeholder={
+                                fieldId === "pesoPersona"
+                                    ? "kg"
+                                    : fieldId === "altezzaPersona"
+                                    ? "cm"
+                                    : fieldId === "altezzaSci"
+                                    ? "cm"
+                                    : fieldId === "altezzaSnowboard"
+                                    ? "cm"
+                                    : ""
+                            }
+                            required={fieldId === "numeroDiPiede*"}
+                        />
+                    </div>
+                );
+            });
 
         switch (selectedAttrezzo) {
             case "sci":
                 return commonFields([
-                    "Dettagli",
-                    "Altezza*",
-                    "Peso*",
-                    "Numero di piede*",
+                    "Dettagli Sci",
+                    "Altezza Sci",
+                    "Altezza Persona",
+                    "Peso Persona",
+                    "Numero Di Piede*",
                     "Scarponi",
                     "Bastoncini",
                     "Casco",
                 ]);
             case "snowboard":
                 return commonFields([
-                    "Dettagli",
-                    "Altezza*",
-                    "Peso*",
-                    "Numero di piede*",
+                    "Dettagli Snowboard",
+                    "Altezza Snowboard",
+                    "Altezza Persona",
+                    "Peso Persona",
+                    "Numero Di Piede*",
                     "Scarponi",
                     "Bastoncini",
                     "Casco",
@@ -239,7 +559,7 @@ const AttrezziForm = () => {
             case "ciaspole":
                 return commonFields(["Dettagli", "Bastoncini"]);
             case "abbigliamento":
-                return commonFields(["Giacca", "Pantalone"]);
+                return commonFields(["Giacca", "Pantalone", "Taglia"]);
             default:
                 return null;
         }
@@ -376,17 +696,45 @@ const AttrezziForm = () => {
                     />
                 </div>
 
+                <div className="mb-4">
+                    <label htmlFor="telefono" className="form-label">
+                        Telefono*
+                    </label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="telefono"
+                        onChange={handleChange}
+                        value={formData.telefono}
+                        required
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="email" className="form-label">
+                        Email
+                    </label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="email"
+                        onChange={handleChange}
+                        value={formData.email}
+                    />
+                </div>
+
                 {formData.tipoNoleggio === "famiglia" && (
                     <div className="mb-4">
                         <label htmlFor="codiceFamiglia" className="form-label">
                             Codice famiglia*
                         </label>
                         <input
-                            type="number"
+                            type="text"
                             className="form-control"
                             id="codiceFamiglia"
                             onChange={handleChange}
                             value={formData.codiceFamiglia}
+                            placeholder="F0001"
                         />
                     </div>
                 )}
