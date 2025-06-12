@@ -70,6 +70,24 @@ const AccordionItem = ({ id, item }) => (
                     <p className="mb-1">
                         <strong>Tipo noleggio:</strong> {item.tiponoleggio}
                     </p>
+                    <p className="mb-1">
+                        <strong>Livello:</strong>{" "}
+                        {item.livello || "Non specificato"}
+                    </p>
+                    {item.modalitanoleggio && (
+                        <p className="mb-1">
+                            <strong>Modalità:</strong>{" "}
+                            {item.modalitanoleggio === "riscatto"
+                                ? "Noleggio a riscatto"
+                                : "Noleggio normale"}
+                        </p>
+                    )}
+                    {item.attrezzaturariscatto && (
+                        <p className="mb-1">
+                            <strong>Attrezzatura da riscattare:</strong>{" "}
+                            {item.attrezzaturariscatto}
+                        </p>
+                    )}
                 </div>
                 <p className="mb-1">
                     <strong>Codice famiglia:</strong>{" "}
@@ -80,6 +98,17 @@ const AccordionItem = ({ id, item }) => (
 
                 <p className="mb-1">
                     <strong>Prezzo:</strong> {item.prezzototale} €
+                    {item.modalitanoleggio === "riscatto" &&
+                        item.accontoiniziale && (
+                            <span>
+                                {" "}
+                                (Acconto: €{item.accontoiniziale}
+                                {item.saldofinale
+                                    ? `, Saldo: €${item.saldofinale}`
+                                    : ""}
+                                )
+                            </span>
+                        )}
                 </p>
 
                 {item.pagato === false || item.pagato == null ? (

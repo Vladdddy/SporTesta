@@ -12,7 +12,12 @@ const AttrezziForm = () => {
         dataInizio: "",
         dataFine: "",
         tipoNoleggio: "",
+        livello: "",
         codiceFamiglia: "",
+        modalitaNoleggio: "normale", // normale or riscatto
+        attrezzaturaRiscatto: "solo sci",
+        accontoIniziale: "",
+        saldoFinale: "",
         dettagli: {},
     });
 
@@ -24,12 +29,20 @@ const AttrezziForm = () => {
             setFormData((prev) => ({ ...prev, attrezzo: value }));
         } else if (name === "tipoCliente") {
             setFormData((prev) => ({ ...prev, tipoCliente: value }));
+        } else if (name === "livello") {
+            setFormData((prev) => ({ ...prev, livello: value }));
+        } else if (name === "modalitaNoleggio") {
+            setFormData((prev) => ({ ...prev, modalitaNoleggio: value }));
+        } else if (name === "attrezzaturaRiscatto") {
+            setFormData((prev) => ({ ...prev, attrezzaturaRiscatto: value }));
         } else if (
             [
                 "nome",
                 "telefono",
                 "email",
                 "prezzo",
+                "accontoIniziale",
+                "saldoFinale",
                 "dataInizio",
                 "dataFine",
                 "codiceFamiglia",
@@ -63,12 +76,30 @@ const AttrezziForm = () => {
             telefono: formData.telefono,
             email: formData.email,
             tipocliente: formData.tipoCliente,
-            prezzototale: parseFloat(formData.prezzo),
+            prezzototale:
+                formData.modalitaNoleggio === "riscatto"
+                    ? parseFloat(formData.accontoIniziale) +
+                      parseFloat(formData.saldoFinale || 0)
+                    : parseFloat(formData.prezzo),
             pagato: false,
             datainizio: formData.dataInizio,
             datafine: formData.dataFine,
             codicefamiglia: formData.codiceFamiglia || null,
             tiponoleggio: formData.tipoNoleggio,
+            livello: formData.livello,
+            modalitanoleggio: formData.modalitaNoleggio,
+            attrezzaturariscatto:
+                formData.modalitaNoleggio === "riscatto"
+                    ? formData.attrezzaturaRiscatto
+                    : null,
+            accontoiniziale:
+                formData.modalitaNoleggio === "riscatto"
+                    ? parseFloat(formData.accontoIniziale)
+                    : null,
+            saldofinale:
+                formData.modalitaNoleggio === "riscatto"
+                    ? parseFloat(formData.saldoFinale || 0)
+                    : null,
         };
 
         try {
@@ -106,7 +137,7 @@ const AttrezziForm = () => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Ricevuta Noleggio - SPORTESTA</title>
+        <title>${formData.nome} - SPORTESTA</title>
         <style>
             * {
                 margin: 0;
@@ -345,6 +376,10 @@ const AttrezziForm = () => {
                     <div class="info-value">${formData.telefono}</div>
                 </div>
                 <div class="info-card">
+                    <div class="info-label">Livello</div>
+                    <div class="info-value">${formData.livello}</div>
+                </div>
+                <div class="info-card">
                     <div class="info-label">Email</div>
                     <div class="info-value">${
                         formData.email || "Non fornita"
@@ -373,7 +408,7 @@ const AttrezziForm = () => {
                     "altezzaSci",
                     "dettagliSnowboard",
                     "altezzaSnowboard",
-                    "dettagli",
+                    "nomeAttrezzatura",
                     "altezzaPersona",
                     "pesoPersona",
                     "scarponi",
@@ -414,7 +449,21 @@ const AttrezziForm = () => {
             })()}
             
             <div class="total-amount">
-                <h2>Importo Versato: €${formData.prezzo}</h2>
+                <h2>${
+                    formData.modalitaNoleggio === "riscatto"
+                        ? `Acconto Iniziale: €${formData.accontoIniziale}${
+                              formData.saldoFinale
+                                  ? ` - Saldo Finale: €${formData.saldoFinale}`
+                                  : ""
+                          }`
+                        : `Importo Versato: €${formData.prezzo}`
+                }</h2>
+                ${
+                    formData.modalitaNoleggio === "riscatto" &&
+                    formData.attrezzaturaRiscatto
+                        ? `<p style="margin-top: 10px; font-size: 16px;">Attrezzatura da riscattare: ${formData.attrezzaturaRiscatto}</p>`
+                        : ""
+                }
             </div>
             
             <div class="company-details">
@@ -461,9 +510,9 @@ const AttrezziForm = () => {
                     .toLowerCase()
                     .replace(/\s+/g, "")
                     .replace(/\*/g, "*")
-                    .replace(/^dettaglisci$/, "dettagliSci")
+                    .replace(/^nomesci$/, "dettagliSci")
                     .replace(/^altezzasci$/, "altezzaSci")
-                    .replace(/^dettaglisnowboard$/, "dettagliSnowboard")
+                    .replace(/^nomesnowboard$/, "dettagliSnowboard")
                     .replace(/^altezzasnowboard$/, "altezzaSnowboard")
                     .replace(/^altezzapersona$/, "altezzaPersona")
                     .replace(/^pesopersona$/, "pesoPersona")
@@ -472,7 +521,7 @@ const AttrezziForm = () => {
                     .replace(/^bastoncini$/, "bastoncini")
                     .replace(/^casco$/, "casco")
                     .replace(/^passo$/, "passo")
-                    .replace(/^dettagli$/, "dettagli")
+                    .replace(/^nome$/, "nomeAttrezzatura")
                     .replace(/^giacca$/, "giacca")
                     .replace(/^pantalone$/, "pantalone")
                     .replace(/^taglia$/, "taglia");
@@ -532,32 +581,100 @@ const AttrezziForm = () => {
                 );
             });
 
+        const renderModalitaNoleggio = () => (
+            <div className="mb-4">
+                <div className="d-flex gap-4 mobile">
+                    <div className="form-check">
+                        <input
+                            className="form-check-input"
+                            type="radio"
+                            name="modalitaNoleggio"
+                            id="normale"
+                            value="normale"
+                            onChange={handleChange}
+                            checked={formData.modalitaNoleggio === "normale"}
+                        />
+                        <label className="form-check-label" htmlFor="normale">
+                            Noleggio normale
+                        </label>
+                    </div>
+                    <div className="form-check">
+                        <input
+                            className="form-check-input"
+                            type="radio"
+                            name="modalitaNoleggio"
+                            id="riscatto"
+                            value="riscatto"
+                            onChange={handleChange}
+                            checked={formData.modalitaNoleggio === "riscatto"}
+                        />
+                        <label className="form-check-label" htmlFor="riscatto">
+                            Noleggio a riscatto
+                        </label>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const renderAttrezzaturaRiscatto = () => (
+            <div className="mb-4">
+                <label htmlFor="attrezzaturaRiscatto" className="form-label">
+                    Attrezzatura da riscattare
+                </label>
+                <select
+                    className="form-select"
+                    id="attrezzaturaRiscatto"
+                    name="attrezzaturaRiscatto"
+                    onChange={handleChange}
+                    value={formData.attrezzaturaRiscatto}
+                >
+                    <option value="solo sci">Solo sci</option>
+                    <option value="solo scarponi">Solo scarponi</option>
+                    <option value="sci e scarponi">Sci e scarponi</option>
+                </select>
+            </div>
+        );
+
         switch (selectedAttrezzo) {
             case "sci":
-                return commonFields([
-                    "Dettagli Sci",
-                    "Altezza Sci",
-                    "Altezza Persona",
-                    "Peso Persona",
-                    "Numero Di Piede*",
-                    "Scarponi",
-                    "Bastoncini",
-                    "Casco",
-                ]);
+                return (
+                    <>
+                        {renderModalitaNoleggio()}
+                        {formData.modalitaNoleggio === "riscatto" &&
+                            renderAttrezzaturaRiscatto()}
+                        {commonFields([
+                            "Nome Sci",
+                            "Altezza Sci",
+                            "Altezza Persona",
+                            "Peso Persona",
+                            "Numero Di Piede*",
+                            "Scarponi",
+                            "Bastoncini",
+                            "Casco",
+                        ])}
+                    </>
+                );
             case "snowboard":
-                return commonFields([
-                    "Dettagli Snowboard",
-                    "Altezza Snowboard",
-                    "Altezza Persona",
-                    "Peso Persona",
-                    "Numero Di Piede*",
-                    "Scarponi",
-                    "Bastoncini",
-                    "Casco",
-                    "Passo",
-                ]);
+                return (
+                    <>
+                        {renderModalitaNoleggio()}
+                        {formData.modalitaNoleggio === "riscatto" &&
+                            renderAttrezzaturaRiscatto()}
+                        {commonFields([
+                            "Nome Snowboard",
+                            "Altezza Snowboard",
+                            "Altezza Persona",
+                            "Peso Persona",
+                            "Numero Di Piede*",
+                            "Scarponi",
+                            "Bastoncini",
+                            "Casco",
+                            "Passo",
+                        ])}
+                    </>
+                );
             case "ciaspole":
-                return commonFields(["Dettagli", "Bastoncini"]);
+                return commonFields(["Nome", "Bastoncini"]);
             case "abbigliamento":
                 return commonFields(["Giacca", "Pantalone", "Taglia"]);
             default:
@@ -623,6 +740,25 @@ const AttrezziForm = () => {
                     <hr className="flex-grow-1" />
                     <span className="mx-3 text-muted">Tipo Noleggio</span>
                     <hr className="flex-grow-1" />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="livello" className="form-label">
+                        Livello noleggio*
+                    </label>
+                    <select
+                        className="form-select"
+                        id="livello"
+                        name="livello"
+                        onChange={handleChange}
+                        value={formData.livello}
+                        required
+                    >
+                        <option value="">Seleziona livello</option>
+                        <option value="Performance">Performance</option>
+                        <option value="Premium">Premium</option>
+                        <option value="Delux">Delux</option>
+                    </select>
                 </div>
 
                 <div className="mb-4">
@@ -813,20 +949,58 @@ const AttrezziForm = () => {
                 <br />
                 <br />
 
-                <div className="mb-4">
-                    <label htmlFor="prezzo" className="form-label">
-                        Prezzo*
-                    </label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="prezzo"
-                        placeholder="€"
-                        value={formData.prezzo}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
+                {formData.modalitaNoleggio === "riscatto" ? (
+                    <>
+                        <div className="mb-4">
+                            <label
+                                htmlFor="accontoIniziale"
+                                className="form-label"
+                            >
+                                Acconto iniziale*
+                            </label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                id="accontoIniziale"
+                                placeholder="€"
+                                value={formData.accontoIniziale}
+                                onChange={handleChange}
+                                required={
+                                    formData.modalitaNoleggio === "riscatto"
+                                }
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="saldoFinale" className="form-label">
+                                Saldo finale
+                            </label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                id="saldoFinale"
+                                placeholder="€"
+                                value={formData.saldoFinale}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </>
+                ) : (
+                    <div className="mb-4">
+                        <label htmlFor="prezzo" className="form-label">
+                            Prezzo*
+                        </label>
+                        <input
+                            type="number"
+                            className="form-control"
+                            id="prezzo"
+                            placeholder="€"
+                            value={formData.prezzo}
+                            onChange={handleChange}
+                            required={formData.modalitaNoleggio !== "riscatto"}
+                        />
+                    </div>
+                )}
 
                 <br />
 
