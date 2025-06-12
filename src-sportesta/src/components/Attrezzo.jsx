@@ -4,6 +4,11 @@ import { supabase } from "../supabaseClient";
 
 const AttrezziForm = () => {
     const [selectedAttrezzo, setSelectedAttrezzo] = useState("");
+    const [isManualFamilyCode, setIsManualFamilyCode] = useState(false);
+    const [familyMembersCount, setFamilyMembersCount] = useState(2);
+    const [currentFamilyMember, setCurrentFamilyMember] = useState(0);
+    const [familyMembers, setFamilyMembers] = useState([]);
+    const [showFamilyConfig, setShowFamilyConfig] = useState(false);
     const [formData, setFormData] = useState({
         attrezzo: "",
         nome: "",
@@ -21,7 +26,102 @@ const AttrezziForm = () => {
         dettagli: {},
     });
 
-    const handleChange = (e) => {
+    // Function to generate automatic family code
+    const generateFamilyCode = async () => {
+        try {
+            const { data, error } = await supabase
+                .from("noleggio")
+                .select("codicefamiglia")
+                .not("codicefamiglia", "is", null)
+                .order("codicefamiglia", { ascending: false })
+                .limit(1);
+
+            if (error) {
+                console.error("Error fetching family codes:", error);
+                return "F0001";
+            }
+
+            if (data && data.length > 0) {
+                const lastCode = data[0].codicefamiglia;
+                const numericPart = parseInt(lastCode.substring(1)) + 1;
+                return `F${numericPart.toString().padStart(4, "0")}`;
+            }
+
+            return "F0001";
+        } catch (error) {
+            console.error("Error generating family code:", error);
+            return "F0001";
+        }
+    };
+
+    // Function to initialize family members with default values
+    const initializeFamilyMembers = (count) => {
+        const members = [];
+        for (let i = 0; i < count; i++) {
+            members.push({
+                nome: i === 0 ? formData.nome : `${formData.nome} (${i + 1})`,
+                attrezzo: "",
+                modalitaNoleggio: "normale",
+                attrezzaturaRiscatto: "solo sci",
+                accontoIniziale: "",
+                saldoFinale: "",
+                prezzo: "",
+                dettagli: {},
+            });
+        }
+        setFamilyMembers(members);
+        setCurrentFamilyMember(0);
+    };
+
+    // Function to update specific family member
+    const updateFamilyMember = (index, field, value) => {
+        setFamilyMembers((prev) => {
+            const updated = [...prev];
+            if (field === "dettagli") {
+                updated[index] = {
+                    ...updated[index],
+                    dettagli: {
+                        ...updated[index].dettagli,
+                        ...value,
+                    },
+                };
+            } else {
+                updated[index] = {
+                    ...updated[index],
+                    [field]: value,
+                };
+            }
+            return updated;
+        });
+    };
+
+    // Function to handle family member equipment selection
+    const handleFamilyMemberChange = (e) => {
+        const { id, value, name } = e.target;
+
+        if (name === "attrezzo") {
+            updateFamilyMember(currentFamilyMember, "attrezzo", value);
+        } else if (name === "modalitaNoleggio") {
+            updateFamilyMember(currentFamilyMember, "modalitaNoleggio", value);
+        } else if (name === "attrezzaturaRiscatto") {
+            updateFamilyMember(
+                currentFamilyMember,
+                "attrezzaturaRiscatto",
+                value
+            );
+        } else if (
+            ["prezzo", "accontoIniziale", "saldoFinale", "nome"].includes(id)
+        ) {
+            updateFamilyMember(currentFamilyMember, id, value);
+        } else {
+            // Handle equipment details
+            updateFamilyMember(currentFamilyMember, "dettagli", {
+                [id]: value,
+            });
+        }
+    };
+
+    const handleChange = async (e) => {
         const { id, value, name } = e.target;
 
         if (name === "attrezzo") {
@@ -35,6 +135,29 @@ const AttrezziForm = () => {
             setFormData((prev) => ({ ...prev, modalitaNoleggio: value }));
         } else if (name === "attrezzaturaRiscatto") {
             setFormData((prev) => ({ ...prev, attrezzaturaRiscatto: value }));
+        } else if (name === "tipoNoleggio") {
+            if (value === "famiglia" && !isManualFamilyCode) {
+                // Generate automatic family code when famiglia is selected
+                const autoCode = await generateFamilyCode();
+                setFormData((prev) => ({
+                    ...prev,
+                    tipoNoleggio: value,
+                    codiceFamiglia: autoCode,
+                }));
+                // Initialize family members array
+                initializeFamilyMembers(familyMembersCount);
+            } else if (value === "singolo") {
+                // Clear family code when singolo is selected
+                setFormData((prev) => ({
+                    ...prev,
+                    tipoNoleggio: value,
+                    codiceFamiglia: "",
+                }));
+                setIsManualFamilyCode(false);
+                setFamilyMembers([]);
+            } else {
+                setFormData((prev) => ({ ...prev, tipoNoleggio: value }));
+            }
         } else if (
             [
                 "nome",
@@ -48,6 +171,10 @@ const AttrezziForm = () => {
                 "codiceFamiglia",
             ].includes(id)
         ) {
+            // Handle manual family code input
+            if (id === "codiceFamiglia") {
+                setIsManualFamilyCode(true);
+            }
             setFormData((prev) => ({ ...prev, [id]: value }));
         } else {
             setFormData((prev) => ({
@@ -70,42 +197,103 @@ const AttrezziForm = () => {
             abbigliamento: 4,
         };
 
-        const dataToSend = {
-            attrezzoid: attrezzoMap[formData.attrezzo],
-            nomecognome: formData.nome,
-            telefono: formData.telefono,
-            email: formData.email,
-            tipocliente: formData.tipoCliente,
-            prezzototale:
-                formData.modalitaNoleggio === "riscatto"
-                    ? parseFloat(formData.accontoIniziale) +
-                      parseFloat(formData.saldoFinale || 0)
-                    : parseFloat(formData.prezzo),
-            pagato: false,
-            datainizio: formData.dataInizio,
-            datafine: formData.dataFine,
-            codicefamiglia: formData.codiceFamiglia || null,
-            tiponoleggio: formData.tipoNoleggio,
-            livello: formData.livello,
-            modalitanoleggio: formData.modalitaNoleggio,
-            attrezzaturariscatto:
-                formData.modalitaNoleggio === "riscatto"
-                    ? formData.attrezzaturaRiscatto
-                    : null,
-            accontoiniziale:
-                formData.modalitaNoleggio === "riscatto"
-                    ? parseFloat(formData.accontoIniziale)
-                    : null,
-            saldofinale:
-                formData.modalitaNoleggio === "riscatto"
-                    ? parseFloat(formData.saldoFinale || 0)
-                    : null,
-        };
+        // Determine how many entries to create
+        const entriesToCreate =
+            formData.tipoNoleggio === "famiglia" ? familyMembersCount : 1;
+        const entries = [];
+
+        for (let i = 0; i < entriesToCreate; i++) {
+            let memberData;
+
+            if (
+                formData.tipoNoleggio === "famiglia" &&
+                familyMembers.length > 0
+            ) {
+                // Use individual family member data
+                memberData = familyMembers[i];
+                const memberAttrezzoId = memberData.attrezzo
+                    ? attrezzoMap[memberData.attrezzo]
+                    : attrezzoMap[formData.attrezzo];
+
+                const dataToSend = {
+                    attrezzoid: memberAttrezzoId,
+                    nomecognome: memberData.nome,
+                    telefono: formData.telefono,
+                    email: formData.email,
+                    tipocliente: formData.tipoCliente,
+                    prezzototale:
+                        memberData.modalitaNoleggio === "riscatto"
+                            ? parseFloat(memberData.accontoIniziale || 0) +
+                              parseFloat(memberData.saldoFinale || 0)
+                            : parseFloat(memberData.prezzo || formData.prezzo),
+                    pagato: false,
+                    datainizio: formData.dataInizio,
+                    datafine: formData.dataFine,
+                    codicefamiglia: formData.codiceFamiglia || null,
+                    tiponoleggio: formData.tipoNoleggio,
+                    livello: formData.livello,
+                    modalitanoleggio: memberData.modalitaNoleggio,
+                    attrezzaturariscatto:
+                        memberData.modalitaNoleggio === "riscatto"
+                            ? memberData.attrezzaturaRiscatto
+                            : null,
+                    accontoiniziale:
+                        memberData.modalitaNoleggio === "riscatto"
+                            ? parseFloat(memberData.accontoIniziale || 0)
+                            : null,
+                    saldofinale:
+                        memberData.modalitaNoleggio === "riscatto"
+                            ? parseFloat(memberData.saldoFinale || 0)
+                            : null,
+                    // Add equipment details from member's dettagli
+                    ...Object.keys(memberData.dettagli).reduce((acc, key) => {
+                        acc[key.toLowerCase()] = memberData.dettagli[key];
+                        return acc;
+                    }, {}),
+                };
+                entries.push(dataToSend);
+            } else {
+                // Use main form data (for single or familia without individual config)
+                const dataToSend = {
+                    attrezzoid: attrezzoMap[formData.attrezzo],
+                    nomecognome:
+                        entriesToCreate === 1
+                            ? formData.nome
+                            : `${formData.nome}${i > 0 ? ` (${i + 1})` : ""}`,
+                    telefono: formData.telefono,
+                    email: formData.email,
+                    tipocliente: formData.tipoCliente,
+                    prezzototale:
+                        formData.modalitaNoleggio === "riscatto"
+                            ? parseFloat(formData.accontoIniziale) +
+                              parseFloat(formData.saldoFinale || 0)
+                            : parseFloat(formData.prezzo),
+                    pagato: false,
+                    datainizio: formData.dataInizio,
+                    datafine: formData.dataFine,
+                    codicefamiglia: formData.codiceFamiglia || null,
+                    tiponoleggio: formData.tipoNoleggio,
+                    livello: formData.livello,
+                    modalitanoleggio: formData.modalitaNoleggio,
+                    attrezzaturariscatto:
+                        formData.modalitaNoleggio === "riscatto"
+                            ? formData.attrezzaturaRiscatto
+                            : null,
+                    accontoiniziale:
+                        formData.modalitaNoleggio === "riscatto"
+                            ? parseFloat(formData.accontoIniziale)
+                            : null,
+                    saldofinale:
+                        formData.modalitaNoleggio === "riscatto"
+                            ? parseFloat(formData.saldoFinale || 0)
+                            : null,
+                };
+                entries.push(dataToSend);
+            }
+        }
 
         try {
-            const { error } = await supabase
-                .from("noleggio")
-                .insert([dataToSend]);
+            const { error } = await supabase.from("noleggio").insert(entries);
 
             if (error) {
                 console.error(
@@ -129,7 +317,7 @@ const AttrezziForm = () => {
 
             const codiceGenerato = data.codice;
 
-            console.log("Noleggio salvato con successo!");
+            console.log(`${entriesToCreate} noleggi salvati con successo!`);
 
             const ricevutaHtml = `
 <!DOCTYPE html>
@@ -359,7 +547,11 @@ const AttrezziForm = () => {
             </div>
             
             <div class="receipt-title">
-                Ricevuta di Noleggio
+                Ricevuta di Noleggio${
+                    formData.tipoNoleggio === "famiglia"
+                        ? ` - Famiglia (${familyMembersCount} membri)`
+                        : ""
+                }
             </div>
             
             <div class="info-grid">
@@ -385,6 +577,15 @@ const AttrezziForm = () => {
                         formData.email || "Non fornita"
                     }</div>
                 </div>
+                ${
+                    formData.tipoNoleggio === "famiglia"
+                        ? `
+                <div class="info-card">
+                    <div class="info-label">Codice Famiglia</div>
+                    <div class="info-value">${formData.codiceFamiglia}</div>
+                </div>`
+                        : ""
+                }
             </div>
             
             <div class="date-section">
@@ -457,7 +658,11 @@ const AttrezziForm = () => {
                                   : ""
                           }`
                         : `Importo Versato: €${formData.prezzo}`
-                }</h2>
+                }${
+                formData.tipoNoleggio === "famiglia"
+                    ? ` x${familyMembersCount}`
+                    : ""
+            }</h2>
                 ${
                     formData.modalitaNoleggio === "riscatto" &&
                     formData.attrezzaturaRiscatto
@@ -502,7 +707,392 @@ const AttrezziForm = () => {
         window.location.reload();
     };
 
+    const renderFamilyMemberConfiguration = () => {
+        const member = familyMembers[currentFamilyMember];
+        if (!member) return null;
+
+        return (
+            <div className="family-config-container">
+                <div className="d-flex align-items-center justify-content-between mb-4">
+                    <h5 className="text-primary mb-0">
+                        Configura Membro {currentFamilyMember + 1} di{" "}
+                        {familyMembersCount}
+                    </h5>
+                    <span className="badge bg-secondary">
+                        {member.nome || `Membro ${currentFamilyMember + 1}`}
+                    </span>
+                </div>
+
+                {/* Member Name */}
+                <div className="mb-4">
+                    <label htmlFor="nome" className="form-label">
+                        Nome e Cognome*
+                    </label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="nome"
+                        onChange={handleFamilyMemberChange}
+                        value={member.nome}
+                        required
+                    />
+                </div>
+
+                {/* Equipment Selection */}
+                <div className="mb-4">
+                    <label className="form-label">Attrezzo*</label>
+                    <div className="d-flex gap-3 flex-wrap">
+                        {[
+                            { id: "sci", label: "Sci" },
+                            { id: "snowboard", label: "Snowboard" },
+                            { id: "ciaspole", label: "Ciaspole" },
+                            { id: "abbigliamento", label: "Abbigliamento" },
+                        ].map((attrezzo) => (
+                            <div className="form-check" key={attrezzo.id}>
+                                <input
+                                    className="form-check-input"
+                                    type="radio"
+                                    name="attrezzo"
+                                    id={`${attrezzo.id}_${currentFamilyMember}`}
+                                    value={attrezzo.id}
+                                    onChange={handleFamilyMemberChange}
+                                    checked={member.attrezzo === attrezzo.id}
+                                />
+                                <label
+                                    className="form-check-label"
+                                    htmlFor={`${attrezzo.id}_${currentFamilyMember}`}
+                                >
+                                    {attrezzo.label}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Equipment Details */}
+                {member.attrezzo &&
+                    renderEquipmentInputsForMember(member.attrezzo)}
+
+                {/* Price Section */}
+                {member.modalitaNoleggio === "riscatto" ? (
+                    <>
+                        <div className="mb-4">
+                            <label
+                                htmlFor="accontoIniziale"
+                                className="form-label"
+                            >
+                                Acconto iniziale*
+                            </label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                id="accontoIniziale"
+                                placeholder="€"
+                                value={member.accontoIniziale}
+                                onChange={handleFamilyMemberChange}
+                                required
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="saldoFinale" className="form-label">
+                                Saldo finale
+                            </label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                id="saldoFinale"
+                                placeholder="€"
+                                value={member.saldoFinale}
+                                onChange={handleFamilyMemberChange}
+                            />
+                        </div>
+                    </>
+                ) : (
+                    <div className="mb-4">
+                        <label htmlFor="prezzo" className="form-label">
+                            Prezzo*
+                        </label>
+                        <input
+                            type="number"
+                            className="form-control"
+                            id="prezzo"
+                            placeholder="€"
+                            value={member.prezzo}
+                            onChange={handleFamilyMemberChange}
+                            required
+                        />
+                    </div>
+                )}
+
+                {/* Navigation Buttons */}
+                <div className="d-flex justify-content-between mt-4">
+                    <div>
+                        {currentFamilyMember > 0 && (
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary"
+                                onClick={() =>
+                                    setCurrentFamilyMember(
+                                        currentFamilyMember - 1
+                                    )
+                                }
+                            >
+                                ← Precedente
+                            </button>
+                        )}
+                    </div>
+                    <div>
+                        {currentFamilyMember < familyMembersCount - 1 ? (
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={() =>
+                                    setCurrentFamilyMember(
+                                        currentFamilyMember + 1
+                                    )
+                                }
+                                disabled={!member.attrezzo || !member.nome}
+                            >
+                                Successivo →
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                className="btn btn-success"
+                                onClick={() => setShowFamilyConfig(false)}
+                                disabled={!member.attrezzo || !member.nome}
+                            >
+                                Completa Configurazione
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Progress indicator */}
+                <div className="progress mt-3" style={{ height: "4px" }}>
+                    <div
+                        className="progress-bar"
+                        role="progressbar"
+                        style={{
+                            width: `${
+                                ((currentFamilyMember + 1) /
+                                    familyMembersCount) *
+                                100
+                            }%`,
+                        }}
+                    ></div>
+                </div>
+            </div>
+        );
+    };
+
+    const renderEquipmentInputsForMember = (selectedEquipment) => {
+        const commonFields = (fields) =>
+            fields.map((field, index) => {
+                // Convert display name to camelCase for id
+                const fieldId = field
+                    .toLowerCase()
+                    .replace(/\s+/g, "")
+                    .replace(/\*/g, "*")
+                    .replace(/^nomesci$/, "dettagliSci")
+                    .replace(/^altezzasci$/, "altezzaSci")
+                    .replace(/^nomesnowboard$/, "dettagliSnowboard")
+                    .replace(/^altezzasnowboard$/, "altezzaSnowboard")
+                    .replace(/^altezzapersona$/, "altezzaPersona")
+                    .replace(/^pesopersona$/, "pesoPersona")
+                    .replace(/^numerodipiede\*$/, "numeroDiPiede*")
+                    .replace(/^scarponi$/, "scarponi")
+                    .replace(/^bastoncini$/, "bastoncini")
+                    .replace(/^casco$/, "casco")
+                    .replace(/^passo$/, "passo")
+                    .replace(/^nome$/, "nomeAttrezzatura")
+                    .replace(/^giacca$/, "giacca")
+                    .replace(/^pantalone$/, "pantalone")
+                    .replace(/^taglia$/, "taglia");
+
+                const currentData = familyMembers[currentFamilyMember];
+
+                return (
+                    <div className="mb-4 mobile" key={index}>
+                        <label htmlFor={fieldId} className="form-label">
+                            {field}
+                        </label>
+                        <input
+                            type={
+                                fieldId === "altezzaPersona"
+                                    ? "number"
+                                    : fieldId === "pesoPersona"
+                                    ? "number"
+                                    : fieldId === "numeroDiPiede*"
+                                    ? "number"
+                                    : fieldId === "altezzaSci"
+                                    ? "number"
+                                    : fieldId === "altezzaSnowboard"
+                                    ? "number"
+                                    : fieldId === "passo"
+                                    ? "number"
+                                    : "text"
+                            }
+                            className="form-control"
+                            id={fieldId}
+                            onChange={handleFamilyMemberChange}
+                            value={
+                                fieldId === "passo"
+                                    ? (() => {
+                                          const piede = parseFloat(
+                                              currentData.dettagli?.[
+                                                  "altezzaPersona"
+                                              ]
+                                          );
+                                          return isNaN(piede)
+                                              ? ""
+                                              : (piede / Math.PI).toFixed(2);
+                                      })()
+                                    : currentData.dettagli?.[fieldId] || ""
+                            }
+                            placeholder={
+                                fieldId === "pesoPersona"
+                                    ? "kg"
+                                    : fieldId === "altezzaPersona"
+                                    ? "cm"
+                                    : fieldId === "altezzaSci"
+                                    ? "cm"
+                                    : fieldId === "altezzaSnowboard"
+                                    ? "cm"
+                                    : ""
+                            }
+                            required={fieldId === "numeroDiPiede*"}
+                        />
+                    </div>
+                );
+            });
+
+        const renderModalitaNoleggio = () => {
+            const currentData = familyMembers[currentFamilyMember];
+
+            return (
+                <div className="mb-4">
+                    <div className="d-flex gap-4 mobile">
+                        <div className="form-check">
+                            <input
+                                className="form-check-input"
+                                type="radio"
+                                name="modalitaNoleggio"
+                                id={`normale_${currentFamilyMember}`}
+                                value="normale"
+                                onChange={handleFamilyMemberChange}
+                                checked={
+                                    currentData.modalitaNoleggio === "normale"
+                                }
+                            />
+                            <label
+                                className="form-check-label"
+                                htmlFor={`normale_${currentFamilyMember}`}
+                            >
+                                Noleggio normale
+                            </label>
+                        </div>
+                        <div className="form-check">
+                            <input
+                                className="form-check-input"
+                                type="radio"
+                                name="modalitaNoleggio"
+                                id={`riscatto_${currentFamilyMember}`}
+                                value="riscatto"
+                                onChange={handleFamilyMemberChange}
+                                checked={
+                                    currentData.modalitaNoleggio === "riscatto"
+                                }
+                            />
+                            <label
+                                className="form-check-label"
+                                htmlFor={`riscatto_${currentFamilyMember}`}
+                            >
+                                Noleggio a riscatto
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const renderAttrezzaturaRiscatto = () => {
+            const currentData = familyMembers[currentFamilyMember];
+
+            return (
+                <div className="mb-4">
+                    <label
+                        htmlFor={`attrezzaturaRiscatto_${currentFamilyMember}`}
+                        className="form-label"
+                    >
+                        Attrezzatura da riscattare
+                    </label>
+                    <select
+                        className="form-select"
+                        id={`attrezzaturaRiscatto_${currentFamilyMember}`}
+                        name="attrezzaturaRiscatto"
+                        onChange={handleFamilyMemberChange}
+                        value={currentData.attrezzaturaRiscatto}
+                    >
+                        <option value="solo sci">Solo sci</option>
+                        <option value="solo scarponi">Solo scarponi</option>
+                        <option value="sci e scarponi">Sci e scarponi</option>
+                    </select>
+                </div>
+            );
+        };
+
+        switch (selectedEquipment) {
+            case "sci":
+                return (
+                    <>
+                        {renderModalitaNoleggio()}
+                        {familyMembers[currentFamilyMember]
+                            ?.modalitaNoleggio === "riscatto" &&
+                            renderAttrezzaturaRiscatto()}
+                        {commonFields([
+                            "Nome Sci",
+                            "Altezza Sci",
+                            "Altezza Persona",
+                            "Peso Persona",
+                            "Numero Di Piede*",
+                            "Scarponi",
+                            "Bastoncini",
+                            "Casco",
+                        ])}
+                    </>
+                );
+            case "snowboard":
+                return (
+                    <>
+                        {renderModalitaNoleggio()}
+                        {familyMembers[currentFamilyMember]
+                            ?.modalitaNoleggio === "riscatto" &&
+                            renderAttrezzaturaRiscatto()}
+                        {commonFields([
+                            "Nome Snowboard",
+                            "Altezza Snowboard",
+                            "Altezza Persona",
+                            "Peso Persona",
+                            "Numero Di Piede*",
+                            "Scarponi",
+                            "Bastoncini",
+                            "Casco",
+                            "Passo",
+                        ])}
+                    </>
+                );
+            case "ciaspole":
+                return commonFields(["Nome", "Bastoncini"]);
+            case "abbigliamento":
+                return commonFields(["Giacca", "Pantalone", "Taglia"]);
+            default:
+                return null;
+        }
+    };
+
     const renderInputs = () => {
+        // Only render equipment inputs for regular (non-family config) mode
         const commonFields = (fields) =>
             fields.map((field, index) => {
                 // Convert display name to camelCase for id
@@ -554,7 +1144,7 @@ const AttrezziForm = () => {
                                 fieldId === "passo"
                                     ? (() => {
                                           const piede = parseFloat(
-                                              formData.dettagli[
+                                              formData.dettagli?.[
                                                   "altezzaPersona"
                                               ]
                                           );
@@ -562,7 +1152,7 @@ const AttrezziForm = () => {
                                               ? ""
                                               : (piede / Math.PI).toFixed(2);
                                       })()
-                                    : formData.dettagli[fieldId] || ""
+                                    : formData.dettagli?.[fieldId] || ""
                             }
                             placeholder={
                                 fieldId === "pesoPersona"
@@ -770,12 +1360,7 @@ const AttrezziForm = () => {
                                 name="tipoNoleggio"
                                 id="singolo"
                                 value="singolo"
-                                onChange={(e) =>
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        tipoNoleggio: e.target.value,
-                                    }))
-                                }
+                                onChange={handleChange}
                                 checked={formData.tipoNoleggio === "singolo"}
                             />
                             <label
@@ -792,12 +1377,7 @@ const AttrezziForm = () => {
                                 name="tipoNoleggio"
                                 id="famiglia"
                                 value="famiglia"
-                                onChange={(e) =>
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        tipoNoleggio: e.target.value,
-                                    }))
-                                }
+                                onChange={handleChange}
                                 checked={formData.tipoNoleggio === "famiglia"}
                             />
                             <label
@@ -860,19 +1440,112 @@ const AttrezziForm = () => {
                 </div>
 
                 {formData.tipoNoleggio === "famiglia" && (
-                    <div className="mb-4">
-                        <label htmlFor="codiceFamiglia" className="form-label">
-                            Codice famiglia*
-                        </label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="codiceFamiglia"
-                            onChange={handleChange}
-                            value={formData.codiceFamiglia}
-                            placeholder="F0001"
-                        />
-                    </div>
+                    <>
+                        <div className="mb-4">
+                            <label
+                                htmlFor="familyMembersCount"
+                                className="form-label"
+                            >
+                                Numero di membri della famiglia*
+                            </label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                id="familyMembersCount"
+                                min="2"
+                                max="10"
+                                value={familyMembersCount}
+                                onChange={(e) => {
+                                    const newCount =
+                                        parseInt(e.target.value) || 2;
+                                    setFamilyMembersCount(newCount);
+                                    initializeFamilyMembers(newCount);
+                                }}
+                                required
+                            />
+                            <small className="text-muted">
+                                Verranno creati {familyMembersCount} noleggi con
+                                lo stesso codice famiglia
+                            </small>
+                        </div>
+
+                        <div className="mb-4">
+                            <label
+                                htmlFor="codiceFamiglia"
+                                className="form-label"
+                            >
+                                Codice famiglia*
+                            </label>
+                            <div className="d-flex gap-2 align-items-center">
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="codiceFamiglia"
+                                    onChange={handleChange}
+                                    value={formData.codiceFamiglia}
+                                    placeholder="F0001"
+                                    disabled={!isManualFamilyCode}
+                                />
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-secondary btn-sm"
+                                    onClick={() => {
+                                        setIsManualFamilyCode(
+                                            !isManualFamilyCode
+                                        );
+                                        if (!isManualFamilyCode) {
+                                            // If switching to manual mode, clear the field
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                codiceFamiglia: "",
+                                            }));
+                                        } else {
+                                            // If switching to auto mode, regenerate code
+                                            generateFamilyCode().then(
+                                                (code) => {
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        codiceFamiglia: code,
+                                                    }));
+                                                }
+                                            );
+                                        }
+                                    }}
+                                    style={{ minWidth: "100px" }}
+                                >
+                                    {isManualFamilyCode ? "Auto" : "Manuale"}
+                                </button>
+                            </div>
+                            <small className="text-muted">
+                                {isManualFamilyCode
+                                    ? "Inserisci manualmente il codice famiglia per aggiungere membri alla stessa famiglia"
+                                    : "Codice generato automaticamente - usa 'Manuale' per inserire un codice esistente"}
+                            </small>
+                        </div>
+
+                        {/* Button to configure family members individually */}
+                        <div className="mb-4">
+                            <button
+                                type="button"
+                                className="btn btn-info w-100"
+                                onClick={() => {
+                                    if (familyMembers.length === 0) {
+                                        initializeFamilyMembers(
+                                            familyMembersCount
+                                        );
+                                    }
+                                    setShowFamilyConfig(true);
+                                }}
+                                disabled={!formData.codiceFamiglia}
+                            >
+                                🔧 Configura Attrezzatura per Ogni Membro
+                            </button>
+                            <small className="text-muted d-block mt-1">
+                                Clicca per scegliere attrezzatura diversa per
+                                ogni membro della famiglia
+                            </small>
+                        </div>
+                    </>
                 )}
 
                 <div className="mb-4">
@@ -911,102 +1584,172 @@ const AttrezziForm = () => {
                     <hr className="flex-grow-1" />
                 </div>
 
-                <div>
-                    <div className="mb-4">
-                        <div className="d-flex gap-4 mobile">
-                            {[
-                                { id: "sci", label: "Sci" },
-                                { id: "snowboard", label: "Snowboard" },
-                                { id: "ciaspole", label: "Ciaspole" },
-                                { id: "abbigliamento", label: "Abbigliamento" },
-                            ].map((attrezzo) => (
-                                <div className="form-check" key={attrezzo.id}>
-                                    <input
-                                        className="form-check-input"
-                                        type="radio"
-                                        name="attrezzo"
-                                        id={attrezzo.id}
-                                        value={attrezzo.id}
-                                        onChange={handleChange}
-                                        checked={
-                                            selectedAttrezzo === attrezzo.id
-                                        }
-                                    />
-                                    <label
-                                        className="form-check-label"
-                                        htmlFor={attrezzo.id}
-                                    >
-                                        {attrezzo.label}
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {renderInputs()}
-                </div>
-
-                <br />
-                <br />
-
-                {formData.modalitaNoleggio === "riscatto" ? (
-                    <>
-                        <div className="mb-4">
-                            <label
-                                htmlFor="accontoIniziale"
-                                className="form-label"
-                            >
-                                Acconto iniziale*
-                            </label>
-                            <input
-                                type="number"
-                                className="form-control"
-                                id="accontoIniziale"
-                                placeholder="€"
-                                value={formData.accontoIniziale}
-                                onChange={handleChange}
-                                required={
-                                    formData.modalitaNoleggio === "riscatto"
-                                }
-                            />
-                        </div>
-
-                        <div className="mb-4">
-                            <label htmlFor="saldoFinale" className="form-label">
-                                Saldo finale
-                            </label>
-                            <input
-                                type="number"
-                                className="form-control"
-                                id="saldoFinale"
-                                placeholder="€"
-                                value={formData.saldoFinale}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    </>
+                {/* Show family configuration or regular equipment selection */}
+                {showFamilyConfig ? (
+                    renderFamilyMemberConfiguration()
                 ) : (
-                    <div className="mb-4">
-                        <label htmlFor="prezzo" className="form-label">
-                            Prezzo*
-                        </label>
-                        <input
-                            type="number"
-                            className="form-control"
-                            id="prezzo"
-                            placeholder="€"
-                            value={formData.prezzo}
-                            onChange={handleChange}
-                            required={formData.modalitaNoleggio !== "riscatto"}
-                        />
+                    <div>
+                        <div className="mb-4">
+                            <div className="d-flex gap-4 mobile">
+                                {[
+                                    { id: "sci", label: "Sci" },
+                                    { id: "snowboard", label: "Snowboard" },
+                                    { id: "ciaspole", label: "Ciaspole" },
+                                    {
+                                        id: "abbigliamento",
+                                        label: "Abbigliamento",
+                                    },
+                                ].map((attrezzo) => (
+                                    <div
+                                        className="form-check"
+                                        key={attrezzo.id}
+                                    >
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="attrezzo"
+                                            id={attrezzo.id}
+                                            value={attrezzo.id}
+                                            onChange={handleChange}
+                                            checked={
+                                                selectedAttrezzo === attrezzo.id
+                                            }
+                                            disabled={
+                                                formData.tipoNoleggio ===
+                                                "famiglia"
+                                            }
+                                        />
+                                        <label
+                                            className="form-check-label"
+                                            htmlFor={attrezzo.id}
+                                        >
+                                            {attrezzo.label}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                            {formData.tipoNoleggio === "famiglia" && (
+                                <small className="text-muted">
+                                    Per noleggi famiglia, configura
+                                    l'attrezzatura individualmente per ogni
+                                    membro usando il pulsante sopra
+                                </small>
+                            )}
+                        </div>
+
+                        {renderInputs()}
                     </div>
                 )}
 
                 <br />
+                <br />
 
-                <button type="submit" className="btn btn-custom">
-                    Salva e scarica ricevuta
-                </button>
+                {/* Show pricing section only if not in family config mode */}
+                {!showFamilyConfig && (
+                    <>
+                        {formData.modalitaNoleggio === "riscatto" ? (
+                            <>
+                                <div className="mb-4">
+                                    <label
+                                        htmlFor="accontoIniziale"
+                                        className="form-label"
+                                    >
+                                        Acconto iniziale*
+                                    </label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        id="accontoIniziale"
+                                        placeholder="€"
+                                        value={formData.accontoIniziale}
+                                        onChange={handleChange}
+                                        required={
+                                            formData.modalitaNoleggio ===
+                                            "riscatto"
+                                        }
+                                    />
+                                </div>
+
+                                <div className="mb-4">
+                                    <label
+                                        htmlFor="saldoFinale"
+                                        className="form-label"
+                                    >
+                                        Saldo finale
+                                    </label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        id="saldoFinale"
+                                        placeholder="€"
+                                        value={formData.saldoFinale}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <div className="mb-4">
+                                <label htmlFor="prezzo" className="form-label">
+                                    Prezzo*
+                                </label>
+                                <input
+                                    type="number"
+                                    className="form-control"
+                                    id="prezzo"
+                                    placeholder="€"
+                                    value={formData.prezzo}
+                                    onChange={handleChange}
+                                    required={
+                                        formData.modalitaNoleggio !== "riscatto"
+                                    }
+                                    disabled={
+                                        formData.tipoNoleggio === "famiglia"
+                                    }
+                                />
+                                {formData.tipoNoleggio === "famiglia" && (
+                                    <small className="text-muted">
+                                        Per noleggi famiglia, imposta il prezzo
+                                        individualmente per ogni membro
+                                    </small>
+                                )}
+                            </div>
+                        )}
+
+                        <br />
+
+                        <button
+                            type="submit"
+                            className="btn btn-custom"
+                            disabled={
+                                formData.tipoNoleggio === "famiglia" &&
+                                !familyMembers.some((m) => m.attrezzo)
+                            }
+                        >
+                            Salva e scarica ricevuta
+                        </button>
+
+                        {formData.tipoNoleggio === "famiglia" &&
+                            !familyMembers.some((m) => m.attrezzo) && (
+                                <small className="text-danger d-block mt-2">
+                                    Configura almeno un membro della famiglia
+                                    prima di salvare
+                                </small>
+                            )}
+                    </>
+                )}
+
+                {/* Back button for family configuration */}
+                {showFamilyConfig && (
+                    <div className="mt-4">
+                        <button
+                            type="button"
+                            className="btn btn-secondary"
+                            onClick={() => setShowFamilyConfig(false)}
+                        >
+                            ← Torna al Form Principale
+                        </button>
+                    </div>
+                )}
             </form>
         </div>
     );
