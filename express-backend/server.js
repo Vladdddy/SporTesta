@@ -10,13 +10,15 @@ app.use(express.json());
 
 app.use(
     cors({
-        origin: "http://localhost:5173",
+        origin: "https://sportesta.vercel.app",
         credentials: true,
     })
 );
 
-app.listen(3000, () => {
-    console.log("Server running on http://localhost:3000");
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });
 
 // --Login check

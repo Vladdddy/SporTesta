@@ -6,6 +6,7 @@ import Noleggio from "./pages/Noleggio";
 import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { API_CONFIG } from "./config";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -18,7 +19,7 @@ function App() {
         if (!token) return false;
 
         try {
-            const response = await fetch("http://localhost:3000/", {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,

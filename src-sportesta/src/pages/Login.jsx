@@ -1,4 +1,5 @@
 import React from "react";
+import { API_CONFIG } from "../config";
 
 const Login = () => {
     const handleLogin = async (event) => {
@@ -7,7 +8,7 @@ const Login = () => {
         event.preventDefault();
 
         try {
-            const response = await fetch("http://localhost:3000/api/login", {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
