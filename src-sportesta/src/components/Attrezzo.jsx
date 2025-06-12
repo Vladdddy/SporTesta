@@ -66,6 +66,7 @@ const AttrezziForm = () => {
                 accontoIniziale: "",
                 saldoFinale: "",
                 prezzo: "",
+                livello: "",
                 dettagli: {},
             });
         }
@@ -109,6 +110,8 @@ const AttrezziForm = () => {
                 "attrezzaturaRiscatto",
                 value
             );
+        } else if (name === "livello") {
+            updateFamilyMember(currentFamilyMember, "livello", value);
         } else if (
             ["prezzo", "accontoIniziale", "saldoFinale", "nome"].includes(id)
         ) {
@@ -235,7 +238,7 @@ const AttrezziForm = () => {
                     datafine: formData.dataFine,
                     codicefamiglia: formData.codiceFamiglia || null,
                     tiponoleggio: formData.tipoNoleggio,
-                    livello: formData.livello,
+                    livello: memberData.livello || formData.livello,
                     modalitanoleggio: memberData.modalitaNoleggio,
                     attrezzaturariscatto:
                         memberData.modalitaNoleggio === "riscatto"
@@ -783,6 +786,29 @@ const AttrezziForm = () => {
                     </div>
                 </div>
 
+                {/* Level Selection */}
+                <div className="mb-4">
+                    <label
+                        htmlFor={`livello_${currentFamilyMember}`}
+                        className="form-label"
+                    >
+                        Livello noleggio*
+                    </label>
+                    <select
+                        className="form-select"
+                        id={`livello_${currentFamilyMember}`}
+                        name="livello"
+                        onChange={handleFamilyMemberChange}
+                        value={member.livello}
+                        required
+                    >
+                        <option value="">Seleziona livello</option>
+                        <option value="Performance">Performance</option>
+                        <option value="Premium">Premium</option>
+                        <option value="Delux">Delux</option>
+                    </select>
+                </div>
+
                 {/* Equipment Details */}
                 {member.attrezzo &&
                     renderEquipmentInputsForMember(member.attrezzo)}
@@ -866,7 +892,11 @@ const AttrezziForm = () => {
                                         currentFamilyMember + 1
                                     )
                                 }
-                                disabled={!member.attrezzo || !member.nome}
+                                disabled={
+                                    !member.attrezzo ||
+                                    !member.nome ||
+                                    !member.livello
+                                }
                             >
                                 Successivo →
                             </button>
@@ -875,7 +905,11 @@ const AttrezziForm = () => {
                                 type="button"
                                 className="btn btn-success"
                                 onClick={() => setShowFamilyConfig(false)}
-                                disabled={!member.attrezzo || !member.nome}
+                                disabled={
+                                    !member.attrezzo ||
+                                    !member.nome ||
+                                    !member.livello
+                                }
                             >
                                 Completa Configurazione
                             </button>
