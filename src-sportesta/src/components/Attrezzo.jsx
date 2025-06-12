@@ -1383,24 +1383,27 @@ const AttrezziForm = () => {
                     <hr className="flex-grow-1" />
                 </div>
 
-                <div className="mb-4">
-                    <label htmlFor="livello" className="form-label">
-                        Livello noleggio*
-                    </label>
-                    <select
-                        className="form-select"
-                        id="livello"
-                        name="livello"
-                        onChange={handleChange}
-                        value={formData.livello}
-                        required
-                    >
-                        <option value="">Seleziona livello</option>
-                        <option value="Performance">Performance</option>
-                        <option value="Premium">Premium</option>
-                        <option value="Delux">Delux</option>
-                    </select>
-                </div>
+                {/* Only show level dropdown for non-family rentals */}
+                {formData.tipoNoleggio !== "famiglia" && (
+                    <div className="mb-4">
+                        <label htmlFor="livello" className="form-label">
+                            Livello noleggio*
+                        </label>
+                        <select
+                            className="form-select"
+                            id="livello"
+                            name="livello"
+                            onChange={handleChange}
+                            value={formData.livello}
+                            required
+                        >
+                            <option value="">Seleziona livello</option>
+                            <option value="Performance">Performance</option>
+                            <option value="Premium">Premium</option>
+                            <option value="Delux">Delux</option>
+                        </select>
+                    </div>
+                )}
 
                 <div className="mb-4">
                     <div className="d-flex gap-4 mobile">
