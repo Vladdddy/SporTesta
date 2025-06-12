@@ -199,7 +199,11 @@ const AttrezziForm = () => {
 
         // Determine how many entries to create
         const entriesToCreate =
-            formData.tipoNoleggio === "famiglia" ? familyMembersCount : 1;
+            formData.tipoNoleggio === "famiglia"
+                ? typeof familyMembersCount === "number"
+                    ? familyMembersCount
+                    : 2
+                : 1;
         const entries = [];
 
         for (let i = 0; i < entriesToCreate; i++) {
@@ -549,7 +553,11 @@ const AttrezziForm = () => {
             <div class="receipt-title">
                 Ricevuta di Noleggio${
                     formData.tipoNoleggio === "famiglia"
-                        ? ` - Famiglia (${familyMembersCount} membri)`
+                        ? ` - Famiglia (${
+                              typeof familyMembersCount === "number"
+                                  ? familyMembersCount
+                                  : 2
+                          } membri)`
                         : ""
                 }
             </div>
@@ -660,7 +668,11 @@ const AttrezziForm = () => {
                         : `Importo Versato: €${formData.prezzo}`
                 }${
                 formData.tipoNoleggio === "famiglia"
-                    ? ` x${familyMembersCount}`
+                    ? ` x${
+                          typeof familyMembersCount === "number"
+                              ? familyMembersCount
+                              : 2
+                      }`
                     : ""
             }</h2>
                 ${
@@ -716,7 +728,9 @@ const AttrezziForm = () => {
                 <div className="d-flex align-items-center justify-content-between mb-4">
                     <h5 className="text-primary mb-0">
                         Configura Membro {currentFamilyMember + 1} di{" "}
-                        {familyMembersCount}
+                        {typeof familyMembersCount === "number"
+                            ? familyMembersCount
+                            : 2}
                     </h5>
                     <span className="badge bg-secondary">
                         {member.nome || `Membro ${currentFamilyMember + 1}`}
@@ -842,7 +856,8 @@ const AttrezziForm = () => {
                         )}
                     </div>
                     <div>
-                        {currentFamilyMember < familyMembersCount - 1 ? (
+                        {typeof familyMembersCount === "number" &&
+                        currentFamilyMember < familyMembersCount - 1 ? (
                             <button
                                 type="button"
                                 className="btn btn-primary"
@@ -876,7 +891,9 @@ const AttrezziForm = () => {
                         style={{
                             width: `${
                                 ((currentFamilyMember + 1) /
-                                    familyMembersCount) *
+                                    (typeof familyMembersCount === "number"
+                                        ? familyMembersCount
+                                        : 2)) *
                                 100
                             }%`,
                         }}
@@ -1456,16 +1473,42 @@ const AttrezziForm = () => {
                                 max="10"
                                 value={familyMembersCount}
                                 onChange={(e) => {
-                                    const newCount =
-                                        parseInt(e.target.value) || 2;
-                                    setFamilyMembersCount(newCount);
-                                    initializeFamilyMembers(newCount);
+                                    const value = e.target.value;
+                                    // Allow empty value while editing
+                                    if (value === "") {
+                                        setFamilyMembersCount("");
+                                        return;
+                                    }
+
+                                    const newCount = parseInt(value);
+                                    // Only update if it's a valid number within range
+                                    if (
+                                        !isNaN(newCount) &&
+                                        newCount >= 2 &&
+                                        newCount <= 10
+                                    ) {
+                                        setFamilyMembersCount(newCount);
+                                        initializeFamilyMembers(newCount);
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    // Reset to minimum value if field is empty when losing focus
+                                    if (
+                                        e.target.value === "" ||
+                                        parseInt(e.target.value) < 2
+                                    ) {
+                                        setFamilyMembersCount(2);
+                                        initializeFamilyMembers(2);
+                                    }
                                 }}
                                 required
                             />
                             <small className="text-muted">
-                                Verranno creati {familyMembersCount} noleggi con
-                                lo stesso codice famiglia
+                                Verranno creati{" "}
+                                {typeof familyMembersCount === "number"
+                                    ? familyMembersCount
+                                    : 2}{" "}
+                                noleggi con lo stesso codice famiglia
                             </small>
                         </div>
 
@@ -1531,7 +1574,10 @@ const AttrezziForm = () => {
                                 onClick={() => {
                                     if (familyMembers.length === 0) {
                                         initializeFamilyMembers(
-                                            familyMembersCount
+                                            typeof familyMembersCount ===
+                                                "number"
+                                                ? familyMembersCount
+                                                : 2
                                         );
                                     }
                                     setShowFamilyConfig(true);
