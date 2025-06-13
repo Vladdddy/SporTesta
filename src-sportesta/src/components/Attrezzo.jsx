@@ -1621,7 +1621,7 @@ const AttrezziForm = () => {
                                 }}
                                 disabled={!formData.codiceFamiglia}
                             >
-                                Configura Attrezzatura
+                                <p>Configura Attrezzatura</p>
                             </button>
                             <small className="text-muted d-block mt-1">
                                 Clicca per scegliere attrezzatura diversa per

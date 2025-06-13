@@ -23,7 +23,10 @@
 
 .bottone-conf {
     background-color: #1eadff;
-    color: #fff;
+
+    & p {
+        color: #fff;
+    }
 }
 
 .indietro-button {
