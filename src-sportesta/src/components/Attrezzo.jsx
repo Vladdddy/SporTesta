@@ -1720,7 +1720,8 @@ const AttrezziForm = () => {
                             )}
                         </div>
 
-                        {renderInputs()}
+                        {/* Only render equipment inputs for single rentals, not family */}
+                        {formData.tipoNoleggio !== "famiglia" && renderInputs()}
                     </div>
                 )}
 
