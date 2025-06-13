@@ -1607,7 +1607,7 @@ const AttrezziForm = () => {
                         <div className="mb-4">
                             <button
                                 type="button"
-                                className="btn btn-info w-100"
+                                className="bottone-conf btn btn-info w-100"
                                 onClick={() => {
                                     if (familyMembers.length === 0) {
                                         initializeFamilyMembers(
@@ -1621,7 +1621,7 @@ const AttrezziForm = () => {
                                 }}
                                 disabled={!formData.codiceFamiglia}
                             >
-                                🔧 Configura Attrezzatura per Ogni Membro
+                                Configura Attrezzatura
                             </button>
                             <small className="text-muted d-block mt-1">
                                 Clicca per scegliere attrezzatura diversa per

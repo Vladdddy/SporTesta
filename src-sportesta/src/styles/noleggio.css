@@ -21,6 +21,11 @@
     }
 }
 
+.bottone-conf {
+    background-color: #1eadff;
+    color: #fff;
+}
+
 .indietro-button {
     background-color: transparent;
     font-size: 1.2rem;
