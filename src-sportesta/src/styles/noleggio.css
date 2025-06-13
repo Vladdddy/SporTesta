@@ -22,6 +22,10 @@
 }
 
 .bottone-conf {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     background-color: #1eadff;
 
     & p {
