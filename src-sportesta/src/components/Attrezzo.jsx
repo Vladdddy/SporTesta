@@ -733,23 +733,84 @@ const AttrezziForm = () => {
             })()}
             
             <div class="total-amount">
-                <h2>${
-                    formData.modalitaNoleggio === "riscatto"
-                        ? `Acconto Iniziale: €${formData.accontoIniziale}${
-                              formData.saldoFinale
-                                  ? ` - Saldo Finale: €${formData.saldoFinale}`
-                                  : ""
-                          }`
-                        : `Importo Versato: €${formData.prezzo}`
-                }${
-                formData.tipoNoleggio === "famiglia"
-                    ? ` x${
-                          typeof familyMembersCount === "number"
-                              ? familyMembersCount
-                              : 2
-                      }`
-                    : ""
-            }</h2>
+                <h2>${(() => {
+                    if (formData.modalitaNoleggio === "riscatto") {
+                        if (
+                            formData.tipoNoleggio === "famiglia" &&
+                            familyMembers.length > 0
+                        ) {
+                            // Calculate total for family riscatto
+                            const totalAcconto = familyMembers.reduce(
+                                (sum, member) => {
+                                    return (
+                                        sum +
+                                        parseFloat(member.accontoIniziale || 0)
+                                    );
+                                },
+                                0
+                            );
+                            const totalSaldo = familyMembers.reduce(
+                                (sum, member) => {
+                                    return (
+                                        sum +
+                                        parseFloat(member.saldoFinale || 0)
+                                    );
+                                },
+                                0
+                            );
+                            return `Acconto Totale: €${totalAcconto.toFixed(
+                                2
+                            )}${
+                                totalSaldo > 0
+                                    ? ` - Saldo Totale: €${totalSaldo.toFixed(
+                                          2
+                                      )}`
+                                    : ""
+                            }`;
+                        } else {
+                            return `Acconto Iniziale: €${
+                                formData.accontoIniziale
+                            }${
+                                formData.saldoFinale
+                                    ? ` - Saldo Finale: €${formData.saldoFinale}`
+                                    : ""
+                            }`;
+                        }
+                    } else {
+                        if (
+                            formData.tipoNoleggio === "famiglia" &&
+                            familyMembers.length > 0
+                        ) {
+                            // Calculate total from individual family member prices
+                            const totalAmount = familyMembers.reduce(
+                                (sum, member) => {
+                                    return (
+                                        sum +
+                                        parseFloat(
+                                            member.prezzo ||
+                                                formData.prezzo ||
+                                                0
+                                        )
+                                    );
+                                },
+                                0
+                            );
+                            return `Importo Totale Versato: €${totalAmount.toFixed(
+                                2
+                            )}`;
+                        } else {
+                            return `Importo Versato: €${formData.prezzo}${
+                                formData.tipoNoleggio === "famiglia"
+                                    ? ` x${
+                                          typeof familyMembersCount === "number"
+                                              ? familyMembersCount
+                                              : 2
+                                      }`
+                                    : ""
+                            }`;
+                        }
+                    }
+                })()}</h2>
                 ${
                     formData.modalitaNoleggio === "riscatto" &&
                     formData.attrezzaturaRiscatto
