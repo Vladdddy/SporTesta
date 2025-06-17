@@ -252,10 +252,16 @@ const AttrezziForm = () => {
                         memberData.modalitaNoleggio === "riscatto"
                             ? parseFloat(memberData.saldoFinale || 0)
                             : null,
-                    // Add equipment details from member's dettagli
+                    // Add equipment details from member's dettagli (exclude fields that shouldn't be stored in DB)
                     ...Object.keys(memberData.dettagli).reduce((acc, key) => {
                         // Remove asterisk from field names before converting to lowercase
                         const cleanKey = key.replace("*", "").toLowerCase();
+
+                        // Skip fields that shouldn't be stored in the database
+                        if (cleanKey === "numerodipiede") {
+                            return acc;
+                        }
+
                         acc[cleanKey] = memberData.dettagli[key];
                         return acc;
                     }, {}),
