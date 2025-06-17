@@ -103,7 +103,9 @@ const Home = () => {
     const displayNoleggiOggi = () => {
         const oggi = new Date().toISOString().split("T")[0];
         const noleggiScadonoOggi = noleggi.filter(
-            (item) => item.datafine?.split("T")[0] === oggi
+            (item) =>
+                item.datafine?.split("T")[0] &&
+                item.datafine?.split("T")[0] <= oggi
         );
 
         scadenzeNum = noleggiScadonoOggi.length;
