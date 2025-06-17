@@ -254,7 +254,9 @@ const AttrezziForm = () => {
                             : null,
                     // Add equipment details from member's dettagli
                     ...Object.keys(memberData.dettagli).reduce((acc, key) => {
-                        acc[key.toLowerCase()] = memberData.dettagli[key];
+                        // Remove asterisk from field names before converting to lowercase
+                        const cleanKey = key.replace("*", "").toLowerCase();
+                        acc[cleanKey] = memberData.dettagli[key];
                         return acc;
                     }, {}),
                 };
