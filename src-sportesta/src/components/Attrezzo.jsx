@@ -626,34 +626,110 @@ const AttrezziForm = () => {
                     "pantalone",
                     "taglia",
                     "passo",
+                    "numeroDiPiede*",
                 ];
-                const dettagliPresenti = dettagliFields.filter(
-                    (field) =>
-                        formData.dettagli[field] &&
-                        formData.dettagli[field].trim() !== ""
-                );
 
-                if (dettagliPresenti.length === 0) return "";
+                // Check if it's a family rental and has family members configured
+                if (
+                    formData.tipoNoleggio === "famiglia" &&
+                    familyMembers.length > 0
+                ) {
+                    let familyEquipmentDetails = "";
 
-                return `
-                <div class="equipment-details">
-                    <div class="equipment-title">Dettagli Attrezzatura</div>
-                    ${dettagliPresenti
-                        .map((field) => {
-                            // Convert camelCase to readable format
-                            const fieldName = field
-                                .replace(/([A-Z])/g, " $1")
-                                .replace(/^./, (str) => str.toUpperCase())
-                                .replace(/sci/i, "Sci")
-                                .replace(/snowboard/i, "Snowboard")
-                                .replace(/persona/i, "Persona");
-                            return `<div class="equipment-item">
-                            <span class="equipment-label">${fieldName}:</span>
-                            <span class="equipment-value">${formData.dettagli[field]}</span>
-                        </div>`;
-                        })
-                        .join("")}
-                </div>`;
+                    familyMembers.forEach((member) => {
+                        if (member.attrezzo && member.dettagli) {
+                            const memberDettagliPresenti =
+                                dettagliFields.filter(
+                                    (field) =>
+                                        member.dettagli[field] &&
+                                        member.dettagli[field]
+                                            .toString()
+                                            .trim() !== ""
+                                );
+
+                            if (memberDettagliPresenti.length > 0) {
+                                const attrezzoDisplayName =
+                                    {
+                                        sci: "Sci",
+                                        snowboard: "Snowboard",
+                                        ciaspole: "Ciaspole",
+                                        abbigliamento: "Abbigliamento",
+                                    }[member.attrezzo] || member.attrezzo;
+
+                                familyEquipmentDetails += `
+                                <div class="equipment-details" style="margin-bottom: 20px;">
+                                    <div class="equipment-title">${
+                                        member.nome
+                                    } - ${attrezzoDisplayName}</div>
+                                    ${memberDettagliPresenti
+                                        .map((field) => {
+                                            // Convert camelCase to readable format
+                                            const fieldName = field
+                                                .replace(/([A-Z])/g, " $1")
+                                                .replace(/^./, (str) =>
+                                                    str.toUpperCase()
+                                                )
+                                                .replace(/sci/i, "Sci")
+                                                .replace(
+                                                    /snowboard/i,
+                                                    "Snowboard"
+                                                )
+                                                .replace(/persona/i, "Persona")
+                                                .replace(
+                                                    /Di Piede\*/i,
+                                                    "Di Piede"
+                                                );
+                                            return `<div class="equipment-item">
+                                                <span class="equipment-label">${fieldName}:</span>
+                                                <span class="equipment-value">${member.dettagli[field]}</span>
+                                            </div>`;
+                                        })
+                                        .join("")}
+                                </div>`;
+                            }
+                        }
+                    });
+
+                    return familyEquipmentDetails;
+                } else {
+                    // Regular single rental details
+                    const dettagliPresenti = dettagliFields.filter(
+                        (field) =>
+                            formData.dettagli[field] &&
+                            formData.dettagli[field].toString().trim() !== ""
+                    );
+
+                    if (dettagliPresenti.length === 0) return "";
+
+                    const attrezzoDisplayName =
+                        {
+                            sci: "Sci",
+                            snowboard: "Snowboard",
+                            ciaspole: "Ciaspole",
+                            abbigliamento: "Abbigliamento",
+                        }[formData.attrezzo] || formData.attrezzo;
+
+                    return `
+                    <div class="equipment-details">
+                        <div class="equipment-title">${attrezzoDisplayName} - Dettagli Attrezzatura</div>
+                        ${dettagliPresenti
+                            .map((field) => {
+                                // Convert camelCase to readable format
+                                const fieldName = field
+                                    .replace(/([A-Z])/g, " $1")
+                                    .replace(/^./, (str) => str.toUpperCase())
+                                    .replace(/sci/i, "Sci")
+                                    .replace(/snowboard/i, "Snowboard")
+                                    .replace(/persona/i, "Persona")
+                                    .replace(/Di Piede\*/i, "Di Piede");
+                                return `<div class="equipment-item">
+                                    <span class="equipment-label">${fieldName}:</span>
+                                    <span class="equipment-value">${formData.dettagli[field]}</span>
+                                </div>`;
+                            })
+                            .join("")}
+                    </div>`;
+                }
             })()}
             
             <div class="total-amount">
