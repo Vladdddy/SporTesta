@@ -102,6 +102,12 @@ const AttrezziForm = () => {
 
         if (name === "attrezzo") {
             updateFamilyMember(currentFamilyMember, "attrezzo", value);
+            // Reset attrezzaturaRiscatto when equipment type changes
+            updateFamilyMember(
+                currentFamilyMember,
+                "attrezzaturaRiscatto",
+                "solo sci"
+            );
         } else if (name === "modalitaNoleggio") {
             updateFamilyMember(currentFamilyMember, "modalitaNoleggio", value);
         } else if (name === "attrezzaturaRiscatto") {
@@ -129,7 +135,12 @@ const AttrezziForm = () => {
 
         if (name === "attrezzo") {
             setSelectedAttrezzo(value);
-            setFormData((prev) => ({ ...prev, attrezzo: value }));
+            setFormData((prev) => ({
+                ...prev,
+                attrezzo: value,
+                // Reset attrezzaturaRiscatto when equipment type changes
+                attrezzaturaRiscatto: "solo sci",
+            }));
         } else if (name === "tipoCliente") {
             setFormData((prev) => ({ ...prev, tipoCliente: value }));
         } else if (name === "livello") {
@@ -1218,9 +1229,27 @@ const AttrezziForm = () => {
                         onChange={handleFamilyMemberChange}
                         value={currentData.attrezzaturaRiscatto}
                     >
-                        <option value="solo sci">Solo sci</option>
-                        <option value="solo scarponi">Solo scarponi</option>
-                        <option value="sci e scarponi">Sci e scarponi</option>
+                        {selectedEquipment === "sci" ? (
+                            <>
+                                <option value="solo sci">Solo sci</option>
+                                <option value="solo scarponi">
+                                    Solo scarponi
+                                </option>
+                                <option value="sci e scarponi">
+                                    Sci e scarponi
+                                </option>
+                            </>
+                        ) : (
+                            <>
+                                <option value="solo sci">Solo snowboard</option>
+                                <option value="solo scarponi">
+                                    Solo scarponi
+                                </option>
+                                <option value="sci e scarponi">
+                                    Snowboard e scarponi
+                                </option>
+                            </>
+                        )}
                     </select>
                 </div>
             );
@@ -1481,9 +1510,23 @@ const AttrezziForm = () => {
                     onChange={handleChange}
                     value={formData.attrezzaturaRiscatto}
                 >
-                    <option value="solo sci">Solo sci</option>
-                    <option value="solo scarponi">Solo scarponi</option>
-                    <option value="sci e scarponi">Sci e scarponi</option>
+                    {selectedAttrezzo === "sci" ? (
+                        <>
+                            <option value="solo sci">Solo sci</option>
+                            <option value="solo scarponi">Solo scarponi</option>
+                            <option value="sci e scarponi">
+                                Sci e scarponi
+                            </option>
+                        </>
+                    ) : (
+                        <>
+                            <option value="solo sci">Solo snowboard</option>
+                            <option value="solo scarponi">Solo scarponi</option>
+                            <option value="sci e scarponi">
+                                Snowboard e scarponi
+                            </option>
+                        </>
+                    )}
                 </select>
             </div>
         );
