@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { API_CONFIG } from "../config";
 
 const Login = () => {
+    const [isLoading, setIsLoading] = useState(false);
+
     const handleLogin = async (event) => {
+        event.preventDefault();
+        setIsLoading(true);
+
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
-        event.preventDefault();
 
         try {
             const response = await fetch(`${API_CONFIG.BASE_URL}/api/login`, {
@@ -26,6 +30,9 @@ const Login = () => {
             }
         } catch (err) {
             console.error("Errore di login:", err);
+            alert("Errore di connessione. Riprova.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -46,7 +53,7 @@ const Login = () => {
                     </div>
 
                     <div className="modal-body p-5 pt-0">
-                        <form className="">
+                        <form onSubmit={handleLogin}>
                             <div className="form-floating mb-3">
                                 <input
                                     type="text"
@@ -54,8 +61,12 @@ const Login = () => {
                                     id="username"
                                     placeholder="name@example.com"
                                     required
-                                ></input>
-                                <label htmlFor="floatingInput">Username</label>
+                                    style={{
+                                        minHeight: "48px",
+                                        fontSize: "16px",
+                                    }}
+                                />
+                                <label htmlFor="username">Username</label>
                             </div>
                             <div className="form-floating mb-3">
                                 <input
@@ -64,17 +75,23 @@ const Login = () => {
                                     id="password"
                                     placeholder="Password"
                                     required
-                                ></input>
-                                <label htmlFor="floatingPassword">
-                                    Password
-                                </label>
+                                    style={{
+                                        minHeight: "48px",
+                                        fontSize: "16px",
+                                    }}
+                                />
+                                <label htmlFor="password">Password</label>
                             </div>
                             <button
                                 className="w-100 mb-2 btn btn-lg rounded-3 btn-primary"
                                 type="submit"
-                                onClick={() => handleLogin(event)}
+                                disabled={isLoading}
+                                style={{
+                                    minHeight: "48px",
+                                    touchAction: "manipulation",
+                                }}
                             >
-                                Accedi
+                                {isLoading ? "Accesso in corso..." : "Accedi"}
                             </button>
                         </form>
                     </div>
