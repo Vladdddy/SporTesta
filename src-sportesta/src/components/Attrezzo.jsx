@@ -1234,16 +1234,55 @@ const AttrezziForm = () => {
                         {familyMembers[currentFamilyMember]
                             ?.modalitaNoleggio === "riscatto" &&
                             renderAttrezzaturaRiscatto()}
-                        {commonFields([
-                            "Nome Sci",
-                            "Altezza Sci",
-                            "Altezza Persona",
-                            "Peso Persona",
-                            "Numero Di Piede*",
-                            "Scarponi",
-                            "Bastoncini",
-                            "Casco",
-                        ])}
+                        {(() => {
+                            // Base fields for sci
+                            let fields = [
+                                "Nome Sci",
+                                "Altezza Sci",
+                                "Altezza Persona",
+                                "Peso Persona",
+                                "Numero Di Piede*",
+                                "Scarponi",
+                                "Bastoncini",
+                                "Casco",
+                            ];
+
+                            // Filter fields based on riscatto selection
+                            const currentMember =
+                                familyMembers[currentFamilyMember];
+                            if (
+                                currentMember?.modalitaNoleggio === "riscatto"
+                            ) {
+                                if (
+                                    currentMember.attrezzaturaRiscatto ===
+                                    "solo sci"
+                                ) {
+                                    // Remove boot-related fields
+                                    fields = fields.filter(
+                                        (field) =>
+                                            field !== "Scarponi" &&
+                                            field !== "Numero Di Piede*"
+                                    );
+                                } else if (
+                                    currentMember.attrezzaturaRiscatto ===
+                                    "solo scarponi"
+                                ) {
+                                    // Remove ski-related fields
+                                    fields = fields.filter(
+                                        (field) =>
+                                            field !== "Nome Sci" &&
+                                            field !== "Altezza Sci" &&
+                                            field !== "Altezza Persona" &&
+                                            field !== "Peso Persona" &&
+                                            field !== "Bastoncini" &&
+                                            field !== "Casco"
+                                    );
+                                }
+                                // For "sci e scarponi", show all fields (no filtering)
+                            }
+
+                            return commonFields(fields);
+                        })()}
                     </>
                 );
             case "snowboard":
@@ -1253,17 +1292,57 @@ const AttrezziForm = () => {
                         {familyMembers[currentFamilyMember]
                             ?.modalitaNoleggio === "riscatto" &&
                             renderAttrezzaturaRiscatto()}
-                        {commonFields([
-                            "Nome Snowboard",
-                            "Altezza Snowboard",
-                            "Altezza Persona",
-                            "Peso Persona",
-                            "Numero Di Piede*",
-                            "Scarponi",
-                            "Bastoncini",
-                            "Casco",
-                            "Passo",
-                        ])}
+                        {(() => {
+                            // Base fields for snowboard
+                            let fields = [
+                                "Nome Snowboard",
+                                "Altezza Snowboard",
+                                "Altezza Persona",
+                                "Peso Persona",
+                                "Numero Di Piede*",
+                                "Scarponi",
+                                "Bastoncini",
+                                "Casco",
+                                "Passo",
+                            ];
+
+                            // Filter fields based on riscatto selection
+                            const currentMember =
+                                familyMembers[currentFamilyMember];
+                            if (
+                                currentMember?.modalitaNoleggio === "riscatto"
+                            ) {
+                                if (
+                                    currentMember.attrezzaturaRiscatto ===
+                                    "solo sci"
+                                ) {
+                                    // Remove boot-related fields (treating snowboard like sci for riscatto logic)
+                                    fields = fields.filter(
+                                        (field) =>
+                                            field !== "Scarponi" &&
+                                            field !== "Numero Di Piede*"
+                                    );
+                                } else if (
+                                    currentMember.attrezzaturaRiscatto ===
+                                    "solo scarponi"
+                                ) {
+                                    // Remove snowboard-related fields
+                                    fields = fields.filter(
+                                        (field) =>
+                                            field !== "Nome Snowboard" &&
+                                            field !== "Altezza Snowboard" &&
+                                            field !== "Altezza Persona" &&
+                                            field !== "Peso Persona" &&
+                                            field !== "Bastoncini" &&
+                                            field !== "Casco" &&
+                                            field !== "Passo"
+                                    );
+                                }
+                                // For "sci e scarponi", show all fields (no filtering)
+                            }
+
+                            return commonFields(fields);
+                        })()}
                     </>
                 );
             case "ciaspole":
@@ -1438,16 +1517,50 @@ const AttrezziForm = () => {
                         {renderModalitaNoleggio()}
                         {formData.modalitaNoleggio === "riscatto" &&
                             renderAttrezzaturaRiscatto()}
-                        {commonFields([
-                            "Nome Sci",
-                            "Altezza Sci",
-                            "Altezza Persona",
-                            "Peso Persona",
-                            "Numero Di Piede*",
-                            "Scarponi",
-                            "Bastoncini",
-                            "Casco",
-                        ])}
+                        {(() => {
+                            // Base fields for sci
+                            let fields = [
+                                "Nome Sci",
+                                "Altezza Sci",
+                                "Altezza Persona",
+                                "Peso Persona",
+                                "Numero Di Piede*",
+                                "Scarponi",
+                                "Bastoncini",
+                                "Casco",
+                            ];
+
+                            // Filter fields based on riscatto selection
+                            if (formData.modalitaNoleggio === "riscatto") {
+                                if (
+                                    formData.attrezzaturaRiscatto === "solo sci"
+                                ) {
+                                    // Remove boot-related fields
+                                    fields = fields.filter(
+                                        (field) =>
+                                            field !== "Scarponi" &&
+                                            field !== "Numero Di Piede*"
+                                    );
+                                } else if (
+                                    formData.attrezzaturaRiscatto ===
+                                    "solo scarponi"
+                                ) {
+                                    // Remove ski-related fields
+                                    fields = fields.filter(
+                                        (field) =>
+                                            field !== "Nome Sci" &&
+                                            field !== "Altezza Sci" &&
+                                            field !== "Altezza Persona" &&
+                                            field !== "Peso Persona" &&
+                                            field !== "Bastoncini" &&
+                                            field !== "Casco"
+                                    );
+                                }
+                                // For "sci e scarponi", show all fields (no filtering)
+                            }
+
+                            return commonFields(fields);
+                        })()}
                     </>
                 );
             case "snowboard":
@@ -1457,17 +1570,52 @@ const AttrezziForm = () => {
                         {renderModalitaNoleggio()}
                         {formData.modalitaNoleggio === "riscatto" &&
                             renderAttrezzaturaRiscatto()}
-                        {commonFields([
-                            "Nome Snowboard",
-                            "Altezza Snowboard",
-                            "Altezza Persona",
-                            "Peso Persona",
-                            "Numero Di Piede*",
-                            "Scarponi",
-                            "Bastoncini",
-                            "Casco",
-                            "Passo",
-                        ])}
+                        {(() => {
+                            // Base fields for snowboard
+                            let fields = [
+                                "Nome Snowboard",
+                                "Altezza Snowboard",
+                                "Altezza Persona",
+                                "Peso Persona",
+                                "Numero Di Piede*",
+                                "Scarponi",
+                                "Bastoncini",
+                                "Casco",
+                                "Passo",
+                            ];
+
+                            // Filter fields based on riscatto selection
+                            if (formData.modalitaNoleggio === "riscatto") {
+                                if (
+                                    formData.attrezzaturaRiscatto === "solo sci"
+                                ) {
+                                    // Remove boot-related fields (treating snowboard like sci for riscatto logic)
+                                    fields = fields.filter(
+                                        (field) =>
+                                            field !== "Scarponi" &&
+                                            field !== "Numero Di Piede*"
+                                    );
+                                } else if (
+                                    formData.attrezzaturaRiscatto ===
+                                    "solo scarponi"
+                                ) {
+                                    // Remove snowboard-related fields
+                                    fields = fields.filter(
+                                        (field) =>
+                                            field !== "Nome Snowboard" &&
+                                            field !== "Altezza Snowboard" &&
+                                            field !== "Altezza Persona" &&
+                                            field !== "Peso Persona" &&
+                                            field !== "Bastoncini" &&
+                                            field !== "Casco" &&
+                                            field !== "Passo"
+                                    );
+                                }
+                                // For "sci e scarponi", show all fields (no filtering)
+                            }
+
+                            return commonFields(fields);
+                        })()}
                     </>
                 );
             case "ciaspole":
