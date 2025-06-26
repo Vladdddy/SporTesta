@@ -104,17 +104,20 @@ const Home = () => {
         const oggi = new Date().toISOString().split("T")[0];
         const noleggiScaduti = noleggi.filter((item) => {
             const dataFine = item.datafine?.split("T")[0];
-            const isPagato = item.pagato === true;
             const isOverdue = dataFine && dataFine < oggi;
 
-            // Count rentals that are unpaid and past their end date
-            return !isPagato && isOverdue;
+            // Show all rentals (both paid and unpaid) that are past their end date
+            return isOverdue;
         });
 
         scadenzeNum = noleggiScaduti.length;
 
         return Array.from({ length: 1 }, (_, i) => (
-            <NoleggioAccordionOggi key={i + 100} id={i + 100} items={noleggi} />
+            <NoleggioAccordionOggi
+                key={i + 100}
+                id={i + 100}
+                items={noleggiScaduti}
+            />
         ));
     };
 
@@ -158,14 +161,14 @@ const Home = () => {
                         marginBottom: "4rem",
                     }}
                 >
-                    Noleggi scaduti non pagati
+                    Noleggi scaduti
                 </h2>
 
                 {displayNoleggiOggi()}
 
                 {scadenzeNum < 1 ? (
                     <p style={{ textAlign: "center", color: "gray" }}>
-                        Nessun noleggio scaduto e non pagato!
+                        Nessun noleggio scaduto!
                     </p>
                 ) : null}
             </div>

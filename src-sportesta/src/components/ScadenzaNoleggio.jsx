@@ -132,11 +132,10 @@ const NoleggioAccordionOggi = ({ id, items }) => {
         <div className="accordion accordion-flush" id={id}>
             {items.map((item, index) => {
                 const dataFine = item.datafine?.split("T")[0];
-                const isPagato = item.pagato === true;
                 const isOverdue = dataFine && dataFine < today;
 
-                // Show rentals that are unpaid and past their end date
-                if (!isPagato && isOverdue) {
+                // Show all rentals that are past their end date (both paid and unpaid)
+                if (isOverdue) {
                     return (
                         <AccordionItem
                             key={index}

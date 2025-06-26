@@ -930,28 +930,31 @@ const AttrezziForm = () => {
                     </div>
                 </div>
 
-                {/* Level Selection */}
-                <div className="mb-4">
-                    <label
-                        htmlFor={`livello_${currentFamilyMember}`}
-                        className="form-label"
-                    >
-                        Livello noleggio*
-                    </label>
-                    <select
-                        className="form-select"
-                        id={`livello_${currentFamilyMember}`}
-                        name="livello"
-                        onChange={handleFamilyMemberChange}
-                        value={member.livello}
-                        required
-                    >
-                        <option value="">Seleziona livello</option>
-                        <option value="Performance">Performance</option>
-                        <option value="Premium">Premium</option>
-                        <option value="Delux">Delux</option>
-                    </select>
-                </div>
+                {/* Level Selection - only for sci and snowboard */}
+                {(member.attrezzo === "sci" ||
+                    member.attrezzo === "snowboard") && (
+                    <div className="mb-4">
+                        <label
+                            htmlFor={`livello_${currentFamilyMember}`}
+                            className="form-label"
+                        >
+                            Livello noleggio*
+                        </label>
+                        <select
+                            className="form-select"
+                            id={`livello_${currentFamilyMember}`}
+                            name="livello"
+                            onChange={handleFamilyMemberChange}
+                            value={member.livello}
+                            required
+                        >
+                            <option value="">Seleziona livello</option>
+                            <option value="Performance">Performance</option>
+                            <option value="Premium">Premium</option>
+                            <option value="Delux">Delux</option>
+                        </select>
+                    </div>
+                )}
 
                 {/* Equipment Details */}
                 {member.attrezzo &&
@@ -1039,7 +1042,10 @@ const AttrezziForm = () => {
                                 disabled={
                                     !member.attrezzo ||
                                     !member.nome ||
-                                    !member.livello
+                                    // Only require livello for sci and snowboard
+                                    ((member.attrezzo === "sci" ||
+                                        member.attrezzo === "snowboard") &&
+                                        !member.livello)
                                 }
                             >
                                 Successivo →
@@ -1052,7 +1058,10 @@ const AttrezziForm = () => {
                                 disabled={
                                     !member.attrezzo ||
                                     !member.nome ||
-                                    !member.livello
+                                    // Only require livello for sci and snowboard
+                                    ((member.attrezzo === "sci" ||
+                                        member.attrezzo === "snowboard") &&
+                                        !member.livello)
                                 }
                             >
                                 Completa Configurazione
@@ -1322,7 +1331,7 @@ const AttrezziForm = () => {
                             ?.modalitaNoleggio === "riscatto" &&
                             renderAttrezzaturaRiscatto()}
                         {(() => {
-                            // Base fields for snowboard
+                            // Base fields for snowboard (removed Bastoncini since snowboarders don't use poles)
                             let fields = [
                                 "Nome Snowboard",
                                 "Altezza Snowboard",
@@ -1330,7 +1339,6 @@ const AttrezziForm = () => {
                                 "Peso Persona",
                                 "Numero Di Piede*",
                                 "Scarponi",
-                                "Bastoncini",
                                 "Casco",
                                 "Passo",
                             ];
@@ -1362,7 +1370,6 @@ const AttrezziForm = () => {
                                             field !== "Altezza Snowboard" &&
                                             field !== "Altezza Persona" &&
                                             field !== "Peso Persona" &&
-                                            field !== "Bastoncini" &&
                                             field !== "Casco" &&
                                             field !== "Passo"
                                     );
@@ -1614,7 +1621,7 @@ const AttrezziForm = () => {
                         {formData.modalitaNoleggio === "riscatto" &&
                             renderAttrezzaturaRiscatto()}
                         {(() => {
-                            // Base fields for snowboard
+                            // Base fields for snowboard (removed Bastoncini since snowboarders don't use poles)
                             let fields = [
                                 "Nome Snowboard",
                                 "Altezza Snowboard",
@@ -1622,7 +1629,6 @@ const AttrezziForm = () => {
                                 "Peso Persona",
                                 "Numero Di Piede*",
                                 "Scarponi",
-                                "Bastoncini",
                                 "Casco",
                                 "Passo",
                             ];
@@ -1649,7 +1655,6 @@ const AttrezziForm = () => {
                                             field !== "Altezza Snowboard" &&
                                             field !== "Altezza Persona" &&
                                             field !== "Peso Persona" &&
-                                            field !== "Bastoncini" &&
                                             field !== "Casco" &&
                                             field !== "Passo"
                                     );
