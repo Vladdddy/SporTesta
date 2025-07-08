@@ -17,6 +17,7 @@ const AttrezziForm = () => {
         dataInizio: "",
         dataFine: "",
         tipoNoleggio: "",
+        duratanoleggio: "giornaliero", // giornaliero or stagionale
         livello: "",
         codiceFamiglia: "",
         modalitaNoleggio: "normale", // normale or riscatto
@@ -149,6 +150,21 @@ const AttrezziForm = () => {
             setFormData((prev) => ({ ...prev, modalitaNoleggio: value }));
         } else if (name === "attrezzaturaRiscatto") {
             setFormData((prev) => ({ ...prev, attrezzaturaRiscatto: value }));
+        } else if (name === "duratanoleggio") {
+            if (value === "stagionale") {
+                // Set today's date for start and 30/04 for end
+                const today = new Date().toISOString().split("T")[0];
+                const endDate = `${new Date().getFullYear()}-04-30`;
+                setFormData((prev) => ({
+                    ...prev,
+                    duratanoleggio: value,
+                    dataInizio: today,
+                    dataFine: endDate,
+                }));
+            } else {
+                // For "giornaliero", just update the duration type
+                setFormData((prev) => ({ ...prev, duratanoleggio: value }));
+            }
         } else if (name === "tipoNoleggio") {
             if (value === "famiglia" && !isManualFamilyCode) {
                 // Generate automatic family code when famiglia is selected
@@ -614,10 +630,62 @@ const AttrezziForm = () => {
                     ).toLocaleDateString("it-IT")}</div>
                 </div>
                 <div class="info-card">
-                    <div class="info-label">Data Fine Noleggio</div>
-                    <div class="info-value">${new Date(
-                        formData.dataFine
-                    ).toLocaleDateString("it-IT")}</div>
+                    <div class="info-label">${(() => {
+                        // Check if any family member or main rental is riscatto for sci or snowboard
+                        const isRiscatto =
+                            formData.modalitaNoleggio === "riscatto" ||
+                            (formData.tipoNoleggio === "famiglia" &&
+                                familyMembers.some(
+                                    (member) =>
+                                        member.modalitaNoleggio ===
+                                            "riscatto" &&
+                                        (member.attrezzo === "sci" ||
+                                            member.attrezzo === "snowboard")
+                                ));
+
+                        const isSkiOrSnowboard =
+                            formData.attrezzo === "sci" ||
+                            formData.attrezzo === "snowboard" ||
+                            (formData.tipoNoleggio === "famiglia" &&
+                                familyMembers.some(
+                                    (member) =>
+                                        member.attrezzo === "sci" ||
+                                        member.attrezzo === "snowboard"
+                                ));
+
+                        return isRiscatto && isSkiOrSnowboard
+                            ? "Data fine noleggio a riscatto ed eventuale saldo finale"
+                            : "Data Fine Noleggio";
+                    })()}</div>
+                    <div class="info-value">${(() => {
+                        // Check if any family member or main rental is riscatto for sci or snowboard
+                        const isRiscatto =
+                            formData.modalitaNoleggio === "riscatto" ||
+                            (formData.tipoNoleggio === "famiglia" &&
+                                familyMembers.some(
+                                    (member) =>
+                                        member.modalitaNoleggio ===
+                                            "riscatto" &&
+                                        (member.attrezzo === "sci" ||
+                                            member.attrezzo === "snowboard")
+                                ));
+
+                        const isSkiOrSnowboard =
+                            formData.attrezzo === "sci" ||
+                            formData.attrezzo === "snowboard" ||
+                            (formData.tipoNoleggio === "famiglia" &&
+                                familyMembers.some(
+                                    (member) =>
+                                        member.attrezzo === "sci" ||
+                                        member.attrezzo === "snowboard"
+                                ));
+
+                        return isRiscatto && isSkiOrSnowboard
+                            ? '<span style="color: red; font-weight: bold;">30/04</span>'
+                            : new Date(formData.dataFine).toLocaleDateString(
+                                  "it-IT"
+                              );
+                    })()}</div>
                 </div>
             </div>
             
@@ -1960,6 +2028,23 @@ const AttrezziForm = () => {
                         </div>
                     </>
                 )}
+
+                <div className="mb-4">
+                    <label htmlFor="duratanoleggio" className="form-label">
+                        Durata noleggio*
+                    </label>
+                    <select
+                        className="form-select"
+                        id="duratanoleggio"
+                        name="duratanoleggio"
+                        onChange={handleChange}
+                        value={formData.duratanoleggio}
+                        required
+                    >
+                        <option value="giornaliero">Giornaliero</option>
+                        <option value="stagionale">Stagionale</option>
+                    </select>
+                </div>
 
                 <div className="mb-4">
                     <label htmlFor="dataInizio" className="form-label">
