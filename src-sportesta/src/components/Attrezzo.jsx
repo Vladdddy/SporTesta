@@ -152,13 +152,22 @@ const AttrezziForm = () => {
             setFormData((prev) => ({ ...prev, attrezzaturaRiscatto: value }));
         } else if (name === "duratanoleggio") {
             if (value === "stagionale") {
-                // Set today's date for start and 30/04 for end
-                const today = new Date().toISOString().split("T")[0];
-                const endDate = `${new Date().getFullYear()}-04-30`;
+                // Set today's date for start and 30/04 for end, with correct year logic
+                const today = new Date();
+                const year = today.getFullYear();
+                const april30 = new Date(year, 3, 30); // Months are 0-indexed
+                let endYear;
+                if (today > april30) {
+                    endYear = year + 1;
+                } else {
+                    endYear = year;
+                }
+                const todayStr = today.toISOString().split("T")[0];
+                const endDate = `${endYear}-04-30`;
                 setFormData((prev) => ({
                     ...prev,
                     duratanoleggio: value,
-                    dataInizio: today,
+                    dataInizio: todayStr,
                     dataFine: endDate,
                 }));
             } else {
@@ -1176,8 +1185,6 @@ const AttrezziForm = () => {
                     .replace(/^scarponi$/, "scarponi")
                     .replace(/^bastoncini$/, "bastoncini")
                     .replace(/^casco$/, "casco")
-                    .replace(/^passo$/, "passo")
-                    .replace(/^nome$/, "nomeAttrezzatura")
                     .replace(/^giacca$/, "giacca")
                     .replace(/^pantalone$/, "pantalone")
                     .replace(/^taglia$/, "taglia");
@@ -1477,8 +1484,6 @@ const AttrezziForm = () => {
                     .replace(/^scarponi$/, "scarponi")
                     .replace(/^bastoncini$/, "bastoncini")
                     .replace(/^casco$/, "casco")
-                    .replace(/^passo$/, "passo")
-                    .replace(/^nome$/, "nomeAttrezzatura")
                     .replace(/^giacca$/, "giacca")
                     .replace(/^pantalone$/, "pantalone")
                     .replace(/^taglia$/, "taglia");
