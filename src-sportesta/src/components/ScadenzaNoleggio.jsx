@@ -97,7 +97,7 @@ const AccordionItem = ({ id, item }) => (
                 </p>
 
                 <p className="mb-1">
-                    <strong>Prezzo:</strong> {item.prezzototale} €
+                    <strong>Prezzo:</strong>
                     {item.modalitanoleggio === "riscatto" &&
                         item.accontoiniziale && (
                             <span>
@@ -106,9 +106,12 @@ const AccordionItem = ({ id, item }) => (
                                 {item.saldofinale
                                     ? `, Saldo: €${item.saldofinale}`
                                     : ""}
-                                )
+                                ) Totale:
                             </span>
-                        )}
+                        )}{" "}
+                    <strong className="text-primary">
+                        €{item.prezzototale}
+                    </strong>
                 </p>
 
                 {item.pagato === false || item.pagato == null ? (

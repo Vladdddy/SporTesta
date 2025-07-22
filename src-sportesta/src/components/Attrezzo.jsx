@@ -581,7 +581,7 @@ const AttrezziForm = () => {
                 <div class="company-info">
                     <h3>SPORTESTA</h3>
                     <div>21013 Gallarate, Via Pegoraro, 18</div>
-                    <div>Cell: 340 141 7605 - Cell: 348 925 1148</div>
+                    <div>Cell: 348 925 1148</div>
                 </div>
             </div>
             
@@ -744,11 +744,26 @@ const AttrezziForm = () => {
                                         abbigliamento: "Abbigliamento",
                                     }[member.attrezzo] || member.attrezzo;
 
+                                // Calculate individual member cost
+                                const memberCost =
+                                    member.modalitaNoleggio === "riscatto"
+                                        ? parseFloat(
+                                              member.accontoIniziale || 0
+                                          ) +
+                                          parseFloat(member.saldoFinale || 0)
+                                        : parseFloat(
+                                              member.prezzo ||
+                                                  formData.prezzo ||
+                                                  0
+                                          );
+
                                 familyEquipmentDetails += `
                                 <div class="equipment-details" style="margin-bottom: 20px;">
                                     <div class="equipment-title">${
                                         member.nome
-                                    } - ${attrezzoDisplayName}</div>
+                                    } - ${attrezzoDisplayName} (€${memberCost.toFixed(
+                                    2
+                                )})</div>
                                     ${memberDettagliPresenti
                                         .map((field) => {
                                             // Convert camelCase to readable format
@@ -1182,6 +1197,7 @@ const AttrezziForm = () => {
                     .replace(/^altezzapersona$/, "altezzaPersona")
                     .replace(/^pesopersona$/, "pesoPersona")
                     .replace(/^numerodipiede\*$/, "numeroDiPiede*")
+                    .replace(/^nome$/, "nomeAttrezzatura")
                     .replace(/^scarponi$/, "scarponi")
                     .replace(/^bastoncini$/, "bastoncini")
                     .replace(/^casco$/, "casco")
@@ -1481,6 +1497,7 @@ const AttrezziForm = () => {
                     .replace(/^altezzapersona$/, "altezzaPersona")
                     .replace(/^pesopersona$/, "pesoPersona")
                     .replace(/^numerodipiede\*$/, "numeroDiPiede*")
+                    .replace(/^nome$/, "nomeAttrezzatura")
                     .replace(/^scarponi$/, "scarponi")
                     .replace(/^bastoncini$/, "bastoncini")
                     .replace(/^casco$/, "casco")
