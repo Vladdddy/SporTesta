@@ -610,10 +610,15 @@ const AttrezziForm = () => {
                     <div class="info-label">Telefono</div>
                     <div class="info-value">${formData.telefono}</div>
                 </div>
+                ${
+                    formData.tipoNoleggio !== "famiglia"
+                        ? `
                 <div class="info-card">
                     <div class="info-label">Livello</div>
                     <div class="info-value">${formData.livello}</div>
-                </div>
+                </div>`
+                        : ""
+                }
                 <div class="info-card">
                     <div class="info-label">Email</div>
                     <div class="info-value">${
@@ -689,11 +694,24 @@ const AttrezziForm = () => {
                                         member.attrezzo === "snowboard"
                                 ));
 
-                        return isRiscatto && isSkiOrSnowboard
-                            ? '<span style="color: red; font-weight: bold;">30/04</span>'
-                            : new Date(formData.dataFine).toLocaleDateString(
-                                  "it-IT"
-                              );
+                        if (isRiscatto && isSkiOrSnowboard) {
+                            // For riscatto, check if it's stagionale to show year
+                            if (formData.duratanoleggio === "stagionale") {
+                                return (
+                                    '<span style="color: black; font-weight: bold;">' +
+                                    new Date(
+                                        formData.dataFine
+                                    ).toLocaleDateString("it-IT") +
+                                    "</span>"
+                                );
+                            } else {
+                                return '<span style="color: black; font-weight: bold;">30/04</span>';
+                            }
+                        } else {
+                            return new Date(
+                                formData.dataFine
+                            ).toLocaleDateString("it-IT");
+                        }
                     })()}</div>
                 </div>
             </div>
@@ -725,71 +743,78 @@ const AttrezziForm = () => {
                     let familyEquipmentDetails = "";
 
                     familyMembers.forEach((member) => {
-                        if (member.attrezzo && member.dettagli) {
+                        if (member.attrezzo) {
                             const memberDettagliPresenti =
                                 dettagliFields.filter(
                                     (field) =>
+                                        member.dettagli &&
                                         member.dettagli[field] &&
                                         member.dettagli[field]
                                             .toString()
                                             .trim() !== ""
                                 );
 
-                            if (memberDettagliPresenti.length > 0) {
-                                const attrezzoDisplayName =
-                                    {
-                                        sci: "Sci",
-                                        snowboard: "Snowboard",
-                                        ciaspole: "Ciaspole",
-                                        abbigliamento: "Abbigliamento",
-                                    }[member.attrezzo] || member.attrezzo;
+                            const attrezzoDisplayName =
+                                {
+                                    sci: "Sci",
+                                    snowboard: "Snowboard",
+                                    ciaspole: "Ciaspole",
+                                    abbigliamento: "Abbigliamento",
+                                }[member.attrezzo] || member.attrezzo;
 
-                                // Calculate individual member cost
-                                const memberCost =
-                                    member.modalitaNoleggio === "riscatto"
-                                        ? parseFloat(
-                                              member.accontoIniziale || 0
-                                          ) +
-                                          parseFloat(member.saldoFinale || 0)
-                                        : parseFloat(
-                                              member.prezzo ||
-                                                  formData.prezzo ||
-                                                  0
-                                          );
+                            // Calculate individual member cost
+                            const memberCost =
+                                member.modalitaNoleggio === "riscatto"
+                                    ? parseFloat(member.accontoIniziale || 0) +
+                                      parseFloat(member.saldoFinale || 0)
+                                    : parseFloat(
+                                          member.prezzo || formData.prezzo || 0
+                                      );
 
-                                familyEquipmentDetails += `
-                                <div class="equipment-details" style="margin-bottom: 20px;">
-                                    <div class="equipment-title">${
-                                        member.nome
-                                    } - ${attrezzoDisplayName} (€${memberCost.toFixed(
-                                    2
-                                )})</div>
-                                    ${memberDettagliPresenti
-                                        .map((field) => {
-                                            // Convert camelCase to readable format
-                                            const fieldName = field
-                                                .replace(/([A-Z])/g, " $1")
-                                                .replace(/^./, (str) =>
-                                                    str.toUpperCase()
-                                                )
-                                                .replace(/sci/i, "Sci")
-                                                .replace(
-                                                    /snowboard/i,
-                                                    "Snowboard"
-                                                )
-                                                .replace(/persona/i, "Persona")
-                                                .replace(
-                                                    /Di Piede\*/i,
-                                                    "Di Piede"
-                                                );
-                                            return `<div class="equipment-item">
-                                                <span class="equipment-label">${fieldName}:</span>
-                                                <span class="equipment-value">${member.dettagli[field]}</span>
-                                            </div>`;
-                                        })
-                                        .join("")}
-                                </div>`;
-                            }
+                            familyEquipmentDetails += `
+                            <div class="equipment-details" style="margin-bottom: 20px;">
+                                <div class="equipment-title">${
+                                    member.nome
+                                } - ${attrezzoDisplayName} (€${memberCost.toFixed(
+                                2
+                            )})${
+                                member.livello ? ` - ${member.livello}` : ""
+                            }</div>
+                                ${
+                                    memberDettagliPresenti.length > 0
+                                        ? memberDettagliPresenti
+                                              .map((field) => {
+                                                  // Convert camelCase to readable format
+                                                  const fieldName = field
+                                                      .replace(
+                                                          /([A-Z])/g,
+                                                          " $1"
+                                                      )
+                                                      .replace(/^./, (str) =>
+                                                          str.toUpperCase()
+                                                      )
+                                                      .replace(/sci/i, "Sci")
+                                                      .replace(
+                                                          /snowboard/i,
+                                                          "Snowboard"
+                                                      )
+                                                      .replace(
+                                                          /persona/i,
+                                                          "Persona"
+                                                      )
+                                                      .replace(
+                                                          /Di Piede\*/i,
+                                                          "Di Piede"
+                                                      );
+                                                  return `<div class="equipment-item">
+                                            <span class="equipment-label">${fieldName}:</span>
+                                            <span class="equipment-value">${member.dettagli[field]}</span>
+                                        </div>`;
+                                              })
+                                              .join("")
+                                        : '<div class="equipment-item"><span class="equipment-label">Nessun dettaglio aggiuntivo</span></div>'
+                                }
+                            </div>`;
                         }
                     });
 
@@ -861,6 +886,7 @@ const AttrezziForm = () => {
                                 },
                                 0
                             );
+                            const grandTotal = totalAcconto + totalSaldo;
                             return `Acconto Totale: €${totalAcconto.toFixed(
                                 2
                             )}${
@@ -869,15 +895,24 @@ const AttrezziForm = () => {
                                           2
                                       )}`
                                     : ""
-                            }`;
+                            }<br><span style="color: black; font-weight: bold;">Totale: €${grandTotal.toFixed(
+                                2
+                            )}</span>`;
                         } else {
+                            const acconto = parseFloat(
+                                formData.accontoIniziale || 0
+                            );
+                            const saldo = parseFloat(formData.saldoFinale || 0);
+                            const totale = acconto + saldo;
                             return `Acconto Iniziale: €${
                                 formData.accontoIniziale
                             }${
                                 formData.saldoFinale
                                     ? ` - Saldo Finale: €${formData.saldoFinale}`
                                     : ""
-                            }`;
+                            }<br><span style="color: black; font-weight: bold;">Totale: €${totale.toFixed(
+                                2
+                            )}</span>`;
                         }
                     } else {
                         if (
@@ -887,14 +922,28 @@ const AttrezziForm = () => {
                             // Calculate total from individual family member prices
                             const totalAmount = familyMembers.reduce(
                                 (sum, member) => {
-                                    return (
-                                        sum +
-                                        parseFloat(
-                                            member.prezzo ||
-                                                formData.prezzo ||
-                                                0
-                                        )
-                                    );
+                                    // For riscatto members, use acconto + saldo
+                                    if (
+                                        member.modalitaNoleggio === "riscatto"
+                                    ) {
+                                        return (
+                                            sum +
+                                            parseFloat(
+                                                member.accontoIniziale || 0
+                                            ) +
+                                            parseFloat(member.saldoFinale || 0)
+                                        );
+                                    } else {
+                                        // For normal rentals, use member price
+                                        return (
+                                            sum +
+                                            parseFloat(
+                                                member.prezzo ||
+                                                    formData.prezzo ||
+                                                    0
+                                            )
+                                        );
+                                    }
                                 },
                                 0
                             );
