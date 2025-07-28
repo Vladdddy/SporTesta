@@ -698,7 +698,7 @@ const AttrezziForm = () => {
                             // For riscatto, check if it's stagionale to show year
                             if (formData.duratanoleggio === "stagionale") {
                                 return (
-                                    '<span style="color: black; font-weight: bold;">' +
+                                    '<span style="color: red; font-weight: bold;">' +
                                     new Date(
                                         formData.dataFine
                                     ).toLocaleDateString("it-IT") +
@@ -908,7 +908,7 @@ const AttrezziForm = () => {
                                 formData.accontoIniziale
                             }${
                                 formData.saldoFinale
-                                    ? ` - Saldo Finale: €${formData.saldoFinale}`
+                                    ? ` <br>Saldo Finale: €${formData.saldoFinale}`
                                     : ""
                             }<br><span style="color: black; font-weight: bold;">Totale: €${totale.toFixed(
                                 2
