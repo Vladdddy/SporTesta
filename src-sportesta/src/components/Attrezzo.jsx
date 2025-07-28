@@ -895,7 +895,7 @@ const AttrezziForm = () => {
                                           2
                                       )}`
                                     : ""
-                            }<br><span style="color: black; font-weight: bold;">Totale: €${grandTotal.toFixed(
+                            }<br><span style="color: grey; font-weight: bold;">Totale: €${grandTotal.toFixed(
                                 2
                             )}</span>`;
                         } else {
@@ -910,7 +910,7 @@ const AttrezziForm = () => {
                                 formData.saldoFinale
                                     ? ` <br>Saldo Finale: €${formData.saldoFinale}`
                                     : ""
-                            }<br><span style="color: black; font-weight: bold;">Totale: €${totale.toFixed(
+                            }<br><span style="color: grey; font-weight: bold;">Totale: €${totale.toFixed(
                                 2
                             )}</span>`;
                         }
