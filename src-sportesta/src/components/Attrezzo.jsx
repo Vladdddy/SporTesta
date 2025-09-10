@@ -805,6 +805,14 @@ const AttrezziForm = () => {
                                                       .replace(
                                                           /Di Piede\*/i,
                                                           "Di Piede"
+                                                      )
+                                                      .replace(
+                                                          /^Scarponi$/i,
+                                                          "Modello e numero scarponi"
+                                                      )
+                                                      .replace(
+                                                          /^Bastoncini$/i,
+                                                          "Modello e numero bastoncini"
                                                       );
                                                   return `<div class="equipment-item">
                                             <span class="equipment-label">${fieldName}:</span>
@@ -849,7 +857,15 @@ const AttrezziForm = () => {
                                     .replace(/sci/i, "Sci")
                                     .replace(/snowboard/i, "Snowboard")
                                     .replace(/persona/i, "Persona")
-                                    .replace(/Di Piede\*/i, "Di Piede");
+                                    .replace(/Di Piede\*/i, "Di Piede")
+                                    .replace(
+                                        /^Scarponi$/i,
+                                        "Modello e numero scarponi"
+                                    )
+                                    .replace(
+                                        /^Bastoncini$/i,
+                                        "Modello e numero bastoncini"
+                                    );
                                 return `<div class="equipment-item">
                                     <span class="equipment-label">${fieldName}:</span>
                                     <span class="equipment-value">${formData.dettagli[field]}</span>
@@ -1247,7 +1263,9 @@ const AttrezziForm = () => {
                     .replace(/^pesopersona$/, "pesoPersona")
                     .replace(/^numerodipiede\*$/, "numeroDiPiede*")
                     .replace(/^nome$/, "nomeAttrezzatura")
+                    .replace(/^modelloenumeroscarponi$/, "scarponi")
                     .replace(/^scarponi$/, "scarponi")
+                    .replace(/^modelloenumerobastoncini$/, "bastoncini")
                     .replace(/^bastoncini$/, "bastoncini")
                     .replace(/^casco$/, "casco")
                     .replace(/^giacca$/, "giacca")
@@ -1420,8 +1438,8 @@ const AttrezziForm = () => {
                                 "Altezza Persona",
                                 "Peso Persona",
                                 "Numero Di Piede*",
-                                "Scarponi",
-                                "Bastoncini",
+                                "Modello e numero scarponi",
+                                "Modello e numero bastoncini",
                                 "Casco",
                             ];
 
@@ -1438,7 +1456,8 @@ const AttrezziForm = () => {
                                     // Remove boot-related fields
                                     fields = fields.filter(
                                         (field) =>
-                                            field !== "Scarponi" &&
+                                            field !==
+                                                "Modello e numero scarponi" &&
                                             field !== "Numero Di Piede*"
                                     );
                                 } else if (
@@ -1452,7 +1471,8 @@ const AttrezziForm = () => {
                                             field !== "Altezza Sci" &&
                                             field !== "Altezza Persona" &&
                                             field !== "Peso Persona" &&
-                                            field !== "Bastoncini" &&
+                                            field !==
+                                                "Modello e numero bastoncini" &&
                                             field !== "Casco"
                                     );
                                 }
@@ -1478,7 +1498,7 @@ const AttrezziForm = () => {
                                 "Altezza Persona",
                                 "Peso Persona",
                                 "Numero Di Piede*",
-                                "Scarponi",
+                                "Modello e numero scarponi",
                                 "Casco",
                                 "Passo",
                             ];
@@ -1496,7 +1516,8 @@ const AttrezziForm = () => {
                                     // Remove boot-related fields (treating snowboard like sci for riscatto logic)
                                     fields = fields.filter(
                                         (field) =>
-                                            field !== "Scarponi" &&
+                                            field !==
+                                                "Modello e numero scarponi" &&
                                             field !== "Numero Di Piede*"
                                     );
                                 } else if (
@@ -1522,7 +1543,7 @@ const AttrezziForm = () => {
                     </>
                 );
             case "ciaspole":
-                return commonFields(["Nome", "Bastoncini"]);
+                return commonFields(["Nome", "Modello e numero bastoncini"]);
             case "abbigliamento":
                 return commonFields(["Giacca", "Pantalone", "Taglia"]);
             default:
@@ -1547,7 +1568,9 @@ const AttrezziForm = () => {
                     .replace(/^pesopersona$/, "pesoPersona")
                     .replace(/^numerodipiede\*$/, "numeroDiPiede*")
                     .replace(/^nome$/, "nomeAttrezzatura")
+                    .replace(/^modelloenumeroscarponi$/, "scarponi")
                     .replace(/^scarponi$/, "scarponi")
+                    .replace(/^modelloenumerobastoncini$/, "bastoncini")
                     .replace(/^bastoncini$/, "bastoncini")
                     .replace(/^casco$/, "casco")
                     .replace(/^giacca$/, "giacca")
@@ -1714,8 +1737,8 @@ const AttrezziForm = () => {
                                 "Altezza Persona",
                                 "Peso Persona",
                                 "Numero Di Piede*",
-                                "Scarponi",
-                                "Bastoncini",
+                                "Modello e numero scarponi",
+                                "Modello e numero bastoncini",
                                 "Casco",
                             ];
 
@@ -1727,7 +1750,8 @@ const AttrezziForm = () => {
                                     // Remove boot-related fields
                                     fields = fields.filter(
                                         (field) =>
-                                            field !== "Scarponi" &&
+                                            field !==
+                                                "Modello e numero scarponi" &&
                                             field !== "Numero Di Piede*"
                                     );
                                 } else if (
@@ -1741,7 +1765,8 @@ const AttrezziForm = () => {
                                             field !== "Altezza Sci" &&
                                             field !== "Altezza Persona" &&
                                             field !== "Peso Persona" &&
-                                            field !== "Bastoncini" &&
+                                            field !==
+                                                "Modello e numero bastoncini" &&
                                             field !== "Casco"
                                     );
                                 }
@@ -1767,7 +1792,7 @@ const AttrezziForm = () => {
                                 "Altezza Persona",
                                 "Peso Persona",
                                 "Numero Di Piede*",
-                                "Scarponi",
+                                "Modello e numero scarponi",
                                 "Casco",
                                 "Passo",
                             ];
@@ -1780,7 +1805,8 @@ const AttrezziForm = () => {
                                     // Remove boot-related fields (treating snowboard like sci for riscatto logic)
                                     fields = fields.filter(
                                         (field) =>
-                                            field !== "Scarponi" &&
+                                            field !==
+                                                "Modello e numero scarponi" &&
                                             field !== "Numero Di Piede*"
                                     );
                                 } else if (
@@ -1806,7 +1832,7 @@ const AttrezziForm = () => {
                     </>
                 );
             case "ciaspole":
-                return commonFields(["Nome", "Bastoncini"]);
+                return commonFields(["Nome", "Modello e numero bastoncini"]);
             case "abbigliamento":
                 return commonFields(["Giacca", "Pantalone", "Taglia"]);
             default:
