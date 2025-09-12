@@ -812,7 +812,7 @@ const AttrezziForm = () => {
                                                       )
                                                       .replace(
                                                           /^Bastoncini$/i,
-                                                          "Modello e numero bastoncini"
+                                                          "Modello e misura bastoncini"
                                                       );
                                                   return `<div class="equipment-item">
                                             <span class="equipment-label">${fieldName}:</span>
@@ -864,7 +864,7 @@ const AttrezziForm = () => {
                                     )
                                     .replace(
                                         /^Bastoncini$/i,
-                                        "Modello e numero bastoncini"
+                                        "Modello e misura bastoncini"
                                     );
                                 return `<div class="equipment-item">
                                     <span class="equipment-label">${fieldName}:</span>
@@ -1439,7 +1439,7 @@ const AttrezziForm = () => {
                                 "Peso Persona",
                                 "Numero Di Piede*",
                                 "Modello e numero scarponi",
-                                "Modello e numero bastoncini",
+                                "Modello e misura bastoncini",
                                 "Casco",
                             ];
 
@@ -1472,7 +1472,7 @@ const AttrezziForm = () => {
                                             field !== "Altezza Persona" &&
                                             field !== "Peso Persona" &&
                                             field !==
-                                                "Modello e numero bastoncini" &&
+                                                "Modello e misura bastoncini" &&
                                             field !== "Casco"
                                     );
                                 }
@@ -1543,7 +1543,7 @@ const AttrezziForm = () => {
                     </>
                 );
             case "ciaspole":
-                return commonFields(["Nome", "Modello e numero bastoncini"]);
+                return commonFields(["Nome", "Modello e misura bastoncini"]);
             case "abbigliamento":
                 return commonFields(["Giacca", "Pantalone", "Taglia"]);
             default:
@@ -1738,7 +1738,7 @@ const AttrezziForm = () => {
                                 "Peso Persona",
                                 "Numero Di Piede*",
                                 "Modello e numero scarponi",
-                                "Modello e numero bastoncini",
+                                "Modello e misura bastoncini",
                                 "Casco",
                             ];
 
@@ -1766,7 +1766,7 @@ const AttrezziForm = () => {
                                             field !== "Altezza Persona" &&
                                             field !== "Peso Persona" &&
                                             field !==
-                                                "Modello e numero bastoncini" &&
+                                                "Modello e misura bastoncini" &&
                                             field !== "Casco"
                                     );
                                 }
@@ -1832,7 +1832,7 @@ const AttrezziForm = () => {
                     </>
                 );
             case "ciaspole":
-                return commonFields(["Nome", "Modello e numero bastoncini"]);
+                return commonFields(["Nome", "Modello e misura bastoncini"]);
             case "abbigliamento":
                 return commonFields(["Giacca", "Pantalone", "Taglia"]);
             default:
