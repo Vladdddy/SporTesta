@@ -812,7 +812,10 @@ const AttrezziForm = () => {
                                                       )
                                                       .replace(
                                                           /^Bastoncini$/i,
-                                                          "Modello e misura bastoncini"
+                                                          member.attrezzo ===
+                                                              "sci"
+                                                              ? "Modello e misura bastoncini"
+                                                              : "Modello e numero bastoncini"
                                                       );
                                                   return `<div class="equipment-item">
                                             <span class="equipment-label">${fieldName}:</span>
@@ -864,7 +867,9 @@ const AttrezziForm = () => {
                                     )
                                     .replace(
                                         /^Bastoncini$/i,
-                                        "Modello e misura bastoncini"
+                                        formData.attrezzo === "sci"
+                                            ? "Modello e misura bastoncini"
+                                            : "Modello e numero bastoncini"
                                     );
                                 return `<div class="equipment-item">
                                     <span class="equipment-label">${fieldName}:</span>
@@ -1265,7 +1270,8 @@ const AttrezziForm = () => {
                     .replace(/^nome$/, "nomeAttrezzatura")
                     .replace(/^modelloenumeroscarponi$/, "scarponi")
                     .replace(/^scarponi$/, "scarponi")
-                    .replace(/^modelloemisuraebastoncini$/, "bastoncini")
+                    .replace(/^modelloenumerobastoncini$/, "bastoncini")
+                    .replace(/^modelloemisurabastoncini$/, "bastoncini")
                     .replace(/^bastoncini$/, "bastoncini")
                     .replace(/^casco$/, "casco")
                     .replace(/^giacca$/, "giacca")
@@ -1543,7 +1549,7 @@ const AttrezziForm = () => {
                     </>
                 );
             case "ciaspole":
-                return commonFields(["Nome", "Modello e misura bastoncini"]);
+                return commonFields(["Nome", "Modello e numero bastoncini"]);
             case "abbigliamento":
                 return commonFields(["Giacca", "Pantalone", "Taglia"]);
             default:
@@ -1570,7 +1576,8 @@ const AttrezziForm = () => {
                     .replace(/^nome$/, "nomeAttrezzatura")
                     .replace(/^modelloenumeroscarponi$/, "scarponi")
                     .replace(/^scarponi$/, "scarponi")
-                    .replace(/^modelloemisuraebastoncini$/, "bastoncini")
+                    .replace(/^modelloenumerobastoncini$/, "bastoncini")
+                    .replace(/^modelloemisurabastoncini$/, "bastoncini")
                     .replace(/^bastoncini$/, "bastoncini")
                     .replace(/^casco$/, "casco")
                     .replace(/^giacca$/, "giacca")
@@ -1832,7 +1839,7 @@ const AttrezziForm = () => {
                     </>
                 );
             case "ciaspole":
-                return commonFields(["Nome", "Modello e misura bastoncini"]);
+                return commonFields(["Nome", "Modello e numero bastoncini"]);
             case "abbigliamento":
                 return commonFields(["Giacca", "Pantalone", "Taglia"]);
             default:
