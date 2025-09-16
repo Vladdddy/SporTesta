@@ -813,7 +813,9 @@ const AttrezziForm = () => {
                                                       .replace(
                                                           /^Bastoncini$/i,
                                                           member.attrezzo ===
-                                                              "sci"
+                                                              "sci" ||
+                                                              member.attrezzo ===
+                                                                  "ciaspole"
                                                               ? "Modello e misura bastoncini"
                                                               : "Modello e numero bastoncini"
                                                       );
@@ -867,7 +869,8 @@ const AttrezziForm = () => {
                                     )
                                     .replace(
                                         /^Bastoncini$/i,
-                                        formData.attrezzo === "sci"
+                                        formData.attrezzo === "sci" ||
+                                            formData.attrezzo === "ciaspole"
                                             ? "Modello e misura bastoncini"
                                             : "Modello e numero bastoncini"
                                     );
@@ -1549,7 +1552,7 @@ const AttrezziForm = () => {
                     </>
                 );
             case "ciaspole":
-                return commonFields(["Nome", "Modello e numero bastoncini"]);
+                return commonFields(["Nome", "Modello e misura bastoncini"]);
             case "abbigliamento":
                 return commonFields(["Giacca", "Pantalone", "Taglia"]);
             default:
@@ -1839,7 +1842,7 @@ const AttrezziForm = () => {
                     </>
                 );
             case "ciaspole":
-                return commonFields(["Nome", "Modello e numero bastoncini"]);
+                return commonFields(["Nome", "Modello e misura bastoncini"]);
             case "abbigliamento":
                 return commonFields(["Giacca", "Pantalone", "Taglia"]);
             default:
