@@ -245,29 +245,31 @@ const AccordionItem = ({ id, item, archiviato }) => {
                                     <option value="no">No</option>
                                 </select>
                             </div>
-                            <div className="d-flex align-items-center gap-3 mt-3">
-                                <label>
-                                    <strong>Saldo Pagato:</strong>
-                                </label>
-                                <select
-                                    value={item.saldo_pagato ? "si" : "no"}
-                                    onChange={(e) => {
-                                        setSaldoPagato(e.target.value);
-                                        handleUpdateSaldoPagato(
-                                            item.codice,
-                                            e.target.value
-                                        );
-                                    }}
-                                    className="form-select"
-                                    style={{
-                                        width: "100px",
-                                        cursor: "pointer",
-                                    }}
-                                >
-                                    <option value="si">Si</option>
-                                    <option value="no">No</option>
-                                </select>
-                            </div>
+                            {item.modalitanoleggio === "riscatto" && (
+                                <div className="d-flex align-items-center gap-3 mt-3">
+                                    <label>
+                                        <strong>Saldo Pagato:</strong>
+                                    </label>
+                                    <select
+                                        value={item.saldo_pagato ? "si" : "no"}
+                                        onChange={(e) => {
+                                            setSaldoPagato(e.target.value);
+                                            handleUpdateSaldoPagato(
+                                                item.codice,
+                                                e.target.value
+                                            );
+                                        }}
+                                        className="form-select"
+                                        style={{
+                                            width: "100px",
+                                            cursor: "pointer",
+                                        }}
+                                    >
+                                        <option value="si">Si</option>
+                                        <option value="no">No</option>
+                                    </select>
+                                </div>
+                            )}
                             <br />
                         </>
                     ) : (
@@ -278,12 +280,14 @@ const AccordionItem = ({ id, item, archiviato }) => {
                                     {item.pagato ? "si" : "no"}
                                 </p>
                             </div>
-                            <div className="d-flex align-items-center gap-3 mt-2">
-                                <p>
-                                    <strong>Saldo Pagato:</strong>{" "}
-                                    {item.saldo_pagato ? "si" : "no"}
-                                </p>
-                            </div>
+                            {item.modalitanoleggio === "riscatto" && (
+                                <div className="d-flex align-items-center gap-3 mt-2">
+                                    <p>
+                                        <strong>Saldo Pagato:</strong>{" "}
+                                        {item.saldo_pagato ? "si" : "no"}
+                                    </p>
+                                </div>
+                            )}
                         </>
                     )}
 
