@@ -18,11 +18,47 @@
     .archiviati {
         margin: 0 2vw;
     }
+
+    #calc-popup {
+        width: 200px;
+        right: 10px;
+        bottom: 70px;
+    }
+
+    #email-popup {
+        width: 250px;
+        right: 10px;
+        bottom: 140px;
+    }
+
+    #calc-btn,
+    #email-btn {
+        right: 10px;
+        padding: 15px;
+    }
+
+    #email-btn {
+        bottom: 80px;
+    }
 }
 
 #calc-btn {
     position: fixed;
     bottom: 20px;
+    right: 20px;
+    background-color: #1a2c74;
+    color: white;
+    border: none;
+    border-radius: 100%;
+    padding: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+}
+
+#email-btn {
+    position: fixed;
+    bottom: 90px;
     right: 20px;
     background-color: #1a2c74;
     color: white;
@@ -45,6 +81,72 @@
     border-radius: 10px;
     display: none;
     z-index: 9999;
+}
+
+#email-popup {
+    position: fixed;
+    bottom: 150px;
+    right: 20px;
+    width: 280px;
+    padding: 20px;
+    background: white;
+    border: 2px solid #1a2c74;
+    border-radius: 10px;
+    display: none;
+    z-index: 9999;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.email-popup-content h4 {
+    margin: 0 0 10px 0;
+    color: #1a2c74;
+    font-size: 18px;
+}
+
+.email-popup-content p {
+    margin: 0 0 15px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.email-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.email-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+    flex: 1;
+}
+
+.email-yes {
+    background-color: #28a745;
+}
+
+.email-yes:hover {
+    background-color: #218838;
+    color: white;
+    text-decoration: none;
+}
+
+.email-no {
+    background-color: #dc3545;
+}
+
+.email-no:hover {
+    background-color: #c82333;
+    color: white;
 }
 
 #calc-popup input {

@@ -5,6 +5,10 @@ import "../styles/noleggio.css";
 const AccordionItem = ({ id, item, archiviato }) => {
     // eslint-disable-next-line no-unused-vars
     const [pagato, setPagato] = useState(item.pagato ? "si" : "no");
+    // eslint-disable-next-line no-unused-vars
+    const [saldoPagato, setSaldoPagato] = useState(
+        item.saldo_pagato ? "si" : "no"
+    );
     const [loading, setLoading] = useState(false);
 
     const [showPopup, setShowPopup] = useState(false);
@@ -55,6 +59,8 @@ const AccordionItem = ({ id, item, archiviato }) => {
                 insertError.message,
                 insertError.details
             );
+            setLoading(false);
+            return;
         }
 
         const { error: deleteError } = await supabase
@@ -87,6 +93,24 @@ const AccordionItem = ({ id, item, archiviato }) => {
             console.error("Errore aggiornamento pagato:", error);
         } else {
             console.log("Stato pagamento aggiornato!");
+        }
+
+        setLoading(false);
+        window.location.reload();
+    };
+
+    const handleUpdateSaldoPagato = async (codice, nuovoValore) => {
+        setLoading(true);
+
+        const { error } = await supabase
+            .from("noleggio")
+            .update({ saldo_pagato: nuovoValore === "si" })
+            .eq("codice", codice);
+
+        if (error) {
+            console.error("Errore aggiornamento saldo pagato:", error);
+        } else {
+            console.log("Stato saldo pagamento aggiornato!");
         }
 
         setLoading(false);
@@ -200,7 +224,7 @@ const AccordionItem = ({ id, item, archiviato }) => {
                         <>
                             <div className="d-flex align-items-center gap-3 mt-3">
                                 <label>
-                                    <strong>Pagato:</strong>
+                                    <strong>Acconto Pagato:</strong>
                                 </label>
                                 <select
                                     value={item.pagato ? "si" : "no"}
@@ -221,14 +245,43 @@ const AccordionItem = ({ id, item, archiviato }) => {
                                     <option value="no">No</option>
                                 </select>
                             </div>
+                            <div className="d-flex align-items-center gap-3 mt-3">
+                                <label>
+                                    <strong>Saldo Pagato:</strong>
+                                </label>
+                                <select
+                                    value={item.saldo_pagato ? "si" : "no"}
+                                    onChange={(e) => {
+                                        setSaldoPagato(e.target.value);
+                                        handleUpdateSaldoPagato(
+                                            item.codice,
+                                            e.target.value
+                                        );
+                                    }}
+                                    className="form-select"
+                                    style={{
+                                        width: "100px",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    <option value="si">Si</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
                             <br />
                         </>
                     ) : (
                         <>
                             <div className="d-flex align-items-center gap-3">
                                 <p>
-                                    <strong>Pagato:</strong>{" "}
+                                    <strong>Acconto Pagato:</strong>{" "}
                                     {item.pagato ? "si" : "no"}
+                                </p>
+                            </div>
+                            <div className="d-flex align-items-center gap-3 mt-2">
+                                <p>
+                                    <strong>Saldo Pagato:</strong>{" "}
+                                    {item.saldo_pagato ? "si" : "no"}
                                 </p>
                             </div>
                         </>

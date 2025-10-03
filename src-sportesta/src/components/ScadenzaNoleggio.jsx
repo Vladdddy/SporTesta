@@ -116,11 +116,21 @@ const AccordionItem = ({ id, item }) => (
 
                 {item.pagato === false || item.pagato == null ? (
                     <p className="mb-1">
-                        <strong>Pagato:</strong> No
+                        <strong>Acconto Pagato:</strong> No
                     </p>
                 ) : (
                     <p className="mb-1">
-                        <strong>Pagato:</strong> Si
+                        <strong>Acconto Pagato:</strong> Si
+                    </p>
+                )}
+
+                {item.saldo_pagato === false || item.saldo_pagato == null ? (
+                    <p className="mb-1">
+                        <strong>Saldo Pagato:</strong> No
+                    </p>
+                ) : (
+                    <p className="mb-1">
+                        <strong>Saldo Pagato:</strong> Si
                     </p>
                 )}
             </div>

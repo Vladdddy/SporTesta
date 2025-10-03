@@ -911,11 +911,26 @@ const AttrezziForm = () => {
                                 0
                             );
                             const grandTotal = totalAcconto + totalSaldo;
-                            return `Acconto Totale: €${totalAcconto.toFixed(
+                            // Calculate april30 date for next year
+                            const today = new Date();
+                            const currentYear = today.getFullYear();
+                            const april30ThisYear = new Date(
+                                currentYear,
+                                3,
+                                30
+                            ); // April 30 of current year
+                            let april30Year;
+                            if (today > april30ThisYear) {
+                                april30Year = currentYear + 1;
+                            } else {
+                                april30Year = currentYear;
+                            }
+                            const april30 = `30/04/${april30Year}`;
+                            return `Acconto Totale Versato: €${totalAcconto.toFixed(
                                 2
                             )}${
                                 totalSaldo > 0
-                                    ? ` - Saldo Totale: €${totalSaldo.toFixed(
+                                    ? ` - Saldo Totale al ${april30}: €${totalSaldo.toFixed(
                                           2
                                       )}`
                                     : ""
@@ -928,11 +943,26 @@ const AttrezziForm = () => {
                             );
                             const saldo = parseFloat(formData.saldoFinale || 0);
                             const totale = acconto + saldo;
-                            return `Acconto Iniziale: €${
+                            // Calculate april30 date for next year
+                            const today = new Date();
+                            const currentYear = today.getFullYear();
+                            const april30ThisYear = new Date(
+                                currentYear,
+                                3,
+                                30
+                            ); // April 30 of current year
+                            let april30Year;
+                            if (today > april30ThisYear) {
+                                april30Year = currentYear + 1;
+                            } else {
+                                april30Year = currentYear;
+                            }
+                            const april30 = `30/04/${april30Year}`;
+                            return `Acconto Iniziale Versato: €${
                                 formData.accontoIniziale
                             }${
                                 formData.saldoFinale
-                                    ? ` <br>Saldo Finale: €${formData.saldoFinale}`
+                                    ? ` <br>Saldo Finale al ${april30}: €${formData.saldoFinale}`
                                     : ""
                             }<br><span style="color: grey; font-weight: bold;">Totale: €${totale.toFixed(
                                 2
