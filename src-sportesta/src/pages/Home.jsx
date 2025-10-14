@@ -52,6 +52,7 @@ const Home = () => {
     const [showNoResultsPopup, setShowNoResultsPopup] = useState(false);
 
     let scadenzeNum = 0;
+    let scadenzeRiscattoNum = 0;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -111,9 +112,10 @@ const Home = () => {
         const noleggiScaduti = noleggi.filter((item) => {
             const dataFine = item.datafine?.split("T")[0];
             const isOverdue = dataFine && dataFine < oggi;
+            const isNotRiscatto = item.modalitanoleggio !== "riscatto";
 
-            // Show all rentals (both paid and unpaid) that are past their end date
-            return isOverdue;
+            // Show only non-riscatto rentals that are past their end date
+            return isOverdue && isNotRiscatto;
         });
 
         scadenzeNum = noleggiScaduti.length;
@@ -123,6 +125,28 @@ const Home = () => {
                 key={i + 100}
                 id={i + 100}
                 items={noleggiScaduti}
+            />
+        ));
+    };
+
+    const displayNoleggiRiscattoScaduti = () => {
+        const oggi = new Date().toISOString().split("T")[0];
+        const noleggiRiscattoScaduti = noleggi.filter((item) => {
+            const dataFine = item.datafine?.split("T")[0];
+            const isOverdue = dataFine && dataFine < oggi;
+            const isRiscatto = item.modalitanoleggio === "riscatto";
+
+            // Show only "a riscatto" rentals that are past their end date
+            return isOverdue && isRiscatto;
+        });
+
+        scadenzeRiscattoNum = noleggiRiscattoScaduti.length;
+
+        return Array.from({ length: 1 }, (_, i) => (
+            <NoleggioAccordionOggi
+                key={i + 200}
+                id={i + 200}
+                items={noleggiRiscattoScaduti}
             />
         ));
     };
@@ -175,6 +199,24 @@ const Home = () => {
                 {scadenzeNum < 1 ? (
                     <p style={{ textAlign: "center", color: "gray" }}>
                         Nessun noleggio scaduto!
+                    </p>
+                ) : null}
+
+                <h2
+                    style={{
+                        textAlign: "center",
+                        marginTop: "8rem",
+                        marginBottom: "4rem",
+                    }}
+                >
+                    Noleggi a riscatto scaduti
+                </h2>
+
+                {displayNoleggiRiscattoScaduti()}
+
+                {scadenzeRiscattoNum < 1 ? (
+                    <p style={{ textAlign: "center", color: "gray" }}>
+                        Nessun noleggio a riscatto scaduto!
                     </p>
                 ) : null}
             </div>
