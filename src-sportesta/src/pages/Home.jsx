@@ -51,9 +51,6 @@ const Home = () => {
     const [filteredNoleggi, setFilteredNoleggi] = useState([]);
     const [showNoResultsPopup, setShowNoResultsPopup] = useState(false);
 
-    let scadenzeNum = 0;
-    let scadenzeRiscattoNum = 0;
-
     useEffect(() => {
         const fetchData = async () => {
             let { data, error } = await supabase.from("noleggio").select("*");
@@ -107,9 +104,9 @@ const Home = () => {
         ));
     };
 
-    const displayNoleggiOggi = () => {
+    const noleggiScaduti = React.useMemo(() => {
         const oggi = new Date().toISOString().split("T")[0];
-        const noleggiScaduti = noleggi.filter((item) => {
+        return noleggi.filter((item) => {
             const dataFine = item.datafine?.split("T")[0];
             const isOverdue = dataFine && dataFine < oggi;
             const isNotRiscatto = item.modalitanoleggio !== "riscatto";
@@ -117,9 +114,9 @@ const Home = () => {
             // Show only non-riscatto rentals that are past their end date
             return isOverdue && isNotRiscatto;
         });
+    }, [noleggi]);
 
-        scadenzeNum = noleggiScaduti.length;
-
+    const displayNoleggiOggi = () => {
         return Array.from({ length: 1 }, (_, i) => (
             <NoleggioAccordionOggi
                 key={i + 100}
@@ -129,9 +126,38 @@ const Home = () => {
         ));
     };
 
-    const displayNoleggiRiscattoScaduti = () => {
+    const noleggiFuturi = React.useMemo(() => {
+        const oggi = new Date();
+        const oggiStr = oggi.toISOString().split("T")[0];
+        const dopodomani = new Date(oggi);
+        dopodomani.setDate(oggi.getDate() + 2);
+        const dopodomaniStr = dopodomani.toISOString().split("T")[0];
+
+        return noleggi.filter((item) => {
+            const dataInizio = item.datainizio?.split("T")[0];
+            // Show rentals starting after today and within 2 days
+            return (
+                dataInizio &&
+                dataInizio > oggiStr &&
+                dataInizio <= dopodomaniStr
+            );
+        });
+    }, [noleggi]);
+
+    const displayNoleggiFuturi = () => {
+        return Array.from({ length: 1 }, (_, i) => (
+            <NoleggioAccordionOggi
+                key={i + 300}
+                id={i + 300}
+                items={noleggiFuturi}
+                variant="success"
+            />
+        ));
+    };
+
+    const noleggiRiscattoScaduti = React.useMemo(() => {
         const oggi = new Date().toISOString().split("T")[0];
-        const noleggiRiscattoScaduti = noleggi.filter((item) => {
+        return noleggi.filter((item) => {
             const dataFine = item.datafine?.split("T")[0];
             const isOverdue = dataFine && dataFine < oggi;
             const isRiscatto = item.modalitanoleggio === "riscatto";
@@ -139,9 +165,9 @@ const Home = () => {
             // Show only "a riscatto" rentals that are past their end date
             return isOverdue && isRiscatto;
         });
+    }, [noleggi]);
 
-        scadenzeRiscattoNum = noleggiRiscattoScaduti.length;
-
+    const displayNoleggiRiscattoScaduti = () => {
         return Array.from({ length: 1 }, (_, i) => (
             <NoleggioAccordionOggi
                 key={i + 200}
@@ -196,9 +222,27 @@ const Home = () => {
 
                 {displayNoleggiOggi()}
 
-                {scadenzeNum < 1 ? (
+                {noleggiScaduti.length < 1 ? (
                     <p style={{ textAlign: "center", color: "gray" }}>
                         Nessun noleggio scaduto!
+                    </p>
+                ) : null}
+
+                <h2
+                    style={{
+                        textAlign: "center",
+                        marginTop: "8rem",
+                        marginBottom: "4rem",
+                    }}
+                >
+                    Noleggi futuri
+                </h2>
+
+                {displayNoleggiFuturi()}
+
+                {noleggiFuturi.length < 1 ? (
+                    <p style={{ textAlign: "center", color: "gray" }}>
+                        Nessun noleggio futuro in arrivo!
                     </p>
                 ) : null}
 
@@ -214,7 +258,7 @@ const Home = () => {
 
                 {displayNoleggiRiscattoScaduti()}
 
-                {scadenzeRiscattoNum < 1 ? (
+                {noleggiRiscattoScaduti.length < 1 ? (
                     <p style={{ textAlign: "center", color: "gray" }}>
                         Nessun noleggio a riscatto scaduto!
                     </p>

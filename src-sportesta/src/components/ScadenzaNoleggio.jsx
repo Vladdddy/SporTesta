@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import { supabase } from "../supabaseClient";
 
-const AccordionItem = ({ id, item }) => {
+const AccordionItem = ({ id, item, variant = "danger" }) => {
     const [loading, setLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [dontShowAgain, setDontShowAgain] = useState(
         localStorage.getItem("hideArchivePopup") === "true"
     );
+
+    const borderClass =
+        variant === "success" ? "border-success" : "border-danger";
+    const textClass = variant === "success" ? "text-success" : "text-danger";
+    const borderColor = variant === "success" ? "#198754" : "#dc3545";
 
     const handleArchiviaClick = () => {
         if (dontShowAgain) {
@@ -74,16 +79,18 @@ const AccordionItem = ({ id, item }) => {
     };
 
     return (
-        <div className="accordion-item border border-danger rounded p-2 mb-2">
+        <div
+            className={`accordion-item border ${borderClass} rounded p-2 mb-2`}
+        >
             <h2 className="accordion-header">
                 <button
-                    className="accordion-button collapsed text-danger"
+                    className={`accordion-button collapsed ${textClass}`}
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target={`#${id}`}
                     aria-expanded="false"
                     aria-controls={id}
-                    style={{ borderColor: "#dc3545" }}
+                    style={{ borderColor: borderColor }}
                 >
                     {item.codice}{" "}
                     <span className="ms-3">{item.nomecognome}</span>
@@ -322,25 +329,18 @@ const AccordionItem = ({ id, item }) => {
     );
 };
 
-const NoleggioAccordionOggi = ({ id, items }) => {
-    const today = new Date().toISOString().split("T")[0];
-
+const NoleggioAccordionOggi = ({ id, items, variant = "danger" }) => {
     return (
         <div className="accordion accordion-flush" id={id}>
             {items.map((item, index) => {
-                const dataFine = item.datafine?.split("T")[0];
-                const isOverdue = dataFine && dataFine < today;
-
-                // Show all rentals that are past their end date (both paid and unpaid)
-                if (isOverdue) {
-                    return (
-                        <AccordionItem
-                            key={index}
-                            id={`${id}-item-${index}`}
-                            item={item}
-                        />
-                    );
-                }
+                return (
+                    <AccordionItem
+                        key={index}
+                        id={`${id}-item-${index}`}
+                        item={item}
+                        variant={variant}
+                    />
+                );
             })}
         </div>
     );
