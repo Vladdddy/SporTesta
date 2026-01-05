@@ -10,6 +10,7 @@ import { API_CONFIG } from "./config";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [type, setType] = useState(
         new URLSearchParams(window.location.search).get("type")
     );
@@ -19,12 +20,19 @@ function App() {
         if (!token) return false;
 
         try {
+            // Add timeout to prevent infinite loading
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
             const response = await fetch(`${API_CONFIG.BASE_URL}/`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
+                signal: controller.signal,
             });
+
+            clearTimeout(timeoutId);
 
             if (response.ok) {
                 return true;
@@ -34,6 +42,8 @@ function App() {
             }
         } catch (err) {
             console.error("Errore di autorizzazione:", err);
+            // Remove token on any error (timeout, network error, etc.)
+            localStorage.removeItem("authToken");
             return false;
         }
     };
@@ -52,12 +62,29 @@ function App() {
         const checkUserLogin = async () => {
             const loginStatus = await checkForm();
             setIsLoggedIn(loginStatus);
+            setIsLoading(false);
         };
 
         checkUserLogin();
     }, []);
 
     const renderPage = () => {
+        if (isLoading) {
+            return (
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "100vh",
+                        fontSize: "1.5rem",
+                    }}
+                >
+                    Caricamento...
+                </div>
+            );
+        }
+
         if (isLoggedIn) {
             switch (type) {
                 case "archivio":
