@@ -4,9 +4,6 @@ import { supabase } from "../supabaseClient";
 const AccordionItem = ({ id, item, variant = "danger" }) => {
     const [loading, setLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
-    const [dontShowAgain, setDontShowAgain] = useState(
-        localStorage.getItem("hideArchivePopup") === "true"
-    );
 
     const borderClass =
         variant === "success" ? "border-success" : "border-danger";
@@ -14,17 +11,10 @@ const AccordionItem = ({ id, item, variant = "danger" }) => {
     const borderColor = variant === "success" ? "#198754" : "#dc3545";
 
     const handleArchiviaClick = () => {
-        if (dontShowAgain) {
-            handleArchiviazione();
-        } else {
-            setShowPopup(true);
-        }
+        setShowPopup(true);
     };
 
     const handleConfermaArchiviazione = () => {
-        if (dontShowAgain) {
-            localStorage.setItem("hideArchivePopup", "true");
-        }
         setShowPopup(false);
         handleArchiviazione();
     };
@@ -274,32 +264,17 @@ const AccordionItem = ({ id, item, variant = "danger" }) => {
                                 <div className="modal-content rounded-3 shadow">
                                     <div className="modal-body p-4 text-center">
                                         <h5 className="mb-0 bold">
-                                            Conferma archiviazione
+                                            ⚠️ Conferma archiviazione
                                         </h5>
                                         <p className="mb-3 mt-3">
-                                            Sei sicuro di voler archiviare
-                                            questo noleggio?
+                                            Sei sicuro di voler archiviare il noleggio di <strong>{item.nomecognome}</strong> (n° <strong>{item.codice}</strong>)?
                                         </p>
-                                        <div className="form-check">
-                                            <input
-                                                className="form-check-input"
-                                                type="checkbox"
-                                                id="dontShowCheckbox"
-                                                checked={dontShowAgain}
-                                                onChange={(e) =>
-                                                    setDontShowAgain(
-                                                        e.target.checked
-                                                    )
-                                                }
-                                            />
-                                            <label
-                                                className="form-check-label"
-                                                htmlFor="dontShowCheckbox"
-                                            >
-                                                Non mostrare più questo
-                                                messaggio
-                                            </label>
-                                        </div>
+                                        <p className="text-danger fw-bold">
+                                            ⚠️ ATTENZIONE: Questa azione sposterà il noleggio nella sezione Archivio.
+                                        </p>
+                                        <p className="text-secondary">
+                                            Una volta archiviato, dovrai creare un nuovo noleggio per lo stesso cliente.
+                                        </p>
                                     </div>
                                     <div className="modal-footer flex-nowrap p-0">
                                         <button

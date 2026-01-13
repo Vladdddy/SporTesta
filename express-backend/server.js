@@ -15,7 +15,8 @@ app.use(
             "http://localhost:5173",
             "http://127.0.0.1:5173",
         ],
-        credentials: true,
+        methods: ["GET", "POST", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
 
@@ -46,16 +47,36 @@ app.get("/", (req, res) => {
 
 // --Login authentification of credentials
 app.post("/api/login", (req, res) => {
+    const requestStart = Date.now();
+    const requestTime = new Date().toISOString();
+    console.log(`\n⏱️  [${requestTime}] Login attempt received`);
+    console.log("📍 Client IP:", req.ip || req.connection.remoteAddress);
+
     const { username, password } = req.body;
+
+    // Quick validation
+    if (!username || !password) {
+        const elapsed = Date.now() - requestStart;
+        console.log(`❌ Missing credentials - Response in ${elapsed}ms`);
+        return res.status(400).json({ error: "Username e password richiesti" });
+    }
 
     if (
         username === process.env.ADMIN_USERNAME &&
         password === process.env.ADMIN_PASSWORD
     ) {
         const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "20h" });
-        res.json({ token });
+        const elapsed = Date.now() - requestStart;
+        console.log(
+            `✅ Login successful for: ${username} - Response in ${elapsed}ms`
+        );
+        return res.json({ token });
     } else {
-        res.status(401).json({ error: "Credenziali non valide" });
+        const elapsed = Date.now() - requestStart;
+        console.log(
+            `❌ Invalid credentials for: ${username} - Response in ${elapsed}ms`
+        );
+        return res.status(401).json({ error: "Credenziali non valide" });
     }
 });
 

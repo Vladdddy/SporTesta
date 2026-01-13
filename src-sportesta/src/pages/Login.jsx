@@ -11,26 +11,68 @@ const Login = () => {
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
 
+        // Tracking tempi per debug
+        const startTime = performance.now();
+        console.log("⏱️ Inizio login alle:", new Date().toISOString());
+        console.log("🔗 Connessione a:", API_CONFIG.BASE_URL);
+
         try {
+            // Add timeout to prevent long waits
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
+
+            const fetchStart = performance.now();
             const response = await fetch(`${API_CONFIG.BASE_URL}/api/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ username, password }),
+                signal: controller.signal,
             });
 
-            const data = await response.json();
+            clearTimeout(timeoutId);
+            const fetchEnd = performance.now();
+            const fetchTime = (fetchEnd - fetchStart) / 1000;
+            console.log(
+                `✅ Risposta ricevuta in ${fetchTime.toFixed(3)} secondi`
+            );
 
-            if (data.token) {
-                localStorage.setItem("authToken", data.token);
-                window.location.href = "/home";
-            } else {
-                alert("Login fallito!");
+            if (!response.ok) {
+                console.error(
+                    "❌ Risposta HTTP:",
+                    response.status,
+                    response.statusText
+                );
+                throw new Error("Credenziali non valide");
             }
+
+            const data = await response.json();
+            const totalTime = (performance.now() - startTime) / 1000;
+            console.log(
+                `✅ Login completato in ${totalTime.toFixed(3)} secondi totali`
+            );
+
+            localStorage.setItem("authToken", data.token);
+            window.location.href = "/home";
         } catch (err) {
-            console.error("Errore di login:", err);
-            alert("Errore di connessione. Riprova.");
+            const errorTime = (performance.now() - startTime) / 1000;
+            console.error(
+                `❌ Errore dopo ${errorTime.toFixed(3)} secondi:`,
+                err
+            );
+
+            if (err.name === "AbortError") {
+                alert(
+                    `⏱️ Timeout dopo 10 secondi\n\n🔗 URL: ${API_CONFIG.BASE_URL}\n\n❌ Il server non risponde. Verifica:\n- Backend avviato su Render/localhost\n- Connessione internet funzionante`
+                );
+            } else if (err.message === "Credenziali non valide") {
+                alert("❌ Username o password errati");
+            } else {
+                alert(
+                    `❌ Errore di connessione\n\n🔗 URL: ${API_CONFIG.BASE_URL}\n\n${err.message}\n\nControlla la console per dettagli (F12)`
+                );
+            }
         } finally {
             setIsLoading(false);
         }

@@ -12,22 +12,12 @@ const AccordionItem = ({ id, item, archiviato }) => {
     const [loading, setLoading] = useState(false);
 
     const [showPopup, setShowPopup] = useState(false);
-    const [dontShowAgain, setDontShowAgain] = useState(
-        localStorage.getItem("hideArchivePopup") === "true"
-    );
 
     const handleArchiviaClick = () => {
-        if (dontShowAgain) {
-            handleArchiviazione();
-        } else {
-            setShowPopup(true);
-        }
+        setShowPopup(true);
     };
 
     const handleConfermaArchiviazione = () => {
-        if (dontShowAgain) {
-            localStorage.setItem("hideArchivePopup", "true");
-        }
         setShowPopup(false);
         handleArchiviazione();
     };
