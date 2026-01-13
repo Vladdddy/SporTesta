@@ -135,10 +135,10 @@ const Home = () => {
 
         return noleggi.filter((item) => {
             const dataInizio = item.datainizio?.split("T")[0];
-            // Show rentals starting after today and within 2 days
+            // Show rentals starting today and within 2 days from now
             return (
                 dataInizio &&
-                dataInizio > oggiStr &&
+                dataInizio >= oggiStr &&
                 dataInizio <= dopodomaniStr
             );
         });

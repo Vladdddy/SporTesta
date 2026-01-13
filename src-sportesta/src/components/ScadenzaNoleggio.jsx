@@ -267,13 +267,20 @@ const AccordionItem = ({ id, item, variant = "danger" }) => {
                                             ⚠️ Conferma archiviazione
                                         </h5>
                                         <p className="mb-3 mt-3">
-                                            Sei sicuro di voler archiviare il noleggio di <strong>{item.nomecognome}</strong> (n° <strong>{item.codice}</strong>)?
+                                            Sei sicuro di voler archiviare il
+                                            noleggio di{" "}
+                                            <strong>{item.nomecognome}</strong>{" "}
+                                            (n° <strong>{item.codice}</strong>)?
                                         </p>
                                         <p className="text-danger fw-bold">
-                                            ⚠️ ATTENZIONE: Questa azione sposterà il noleggio nella sezione Archivio.
+                                            ⚠️ ATTENZIONE: Questa azione
+                                            sposterà il noleggio nella sezione
+                                            Archivio.
                                         </p>
                                         <p className="text-secondary">
-                                            Una volta archiviato, dovrai creare un nuovo noleggio per lo stesso cliente.
+                                            Una volta archiviato, dovrai creare
+                                            un nuovo noleggio per lo stesso
+                                            cliente.
                                         </p>
                                     </div>
                                     <div className="modal-footer flex-nowrap p-0">
