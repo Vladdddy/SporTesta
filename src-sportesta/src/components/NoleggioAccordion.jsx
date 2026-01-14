@@ -12,6 +12,7 @@ const AccordionItem = ({ id, item, archiviato }) => {
     const [loading, setLoading] = useState(false);
 
     const [showPopup, setShowPopup] = useState(false);
+    const [dontShowAgain, setDontShowAgain] = useState(false);
 
     const handleArchiviaClick = () => {
         setShowPopup(true);
