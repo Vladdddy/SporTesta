@@ -8,7 +8,7 @@ import Footer from "./components/Footer";
 
 function App() {
     const [type, setType] = useState(
-        new URLSearchParams(window.location.search).get("type")
+        new URLSearchParams(window.location.search).get("type"),
     );
 
     useEffect(() => {
