@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+/*import React, { useState } from "react";
 import { supabase } from "../supabaseClient";
-import "../styles/noleggio.css";
+import "../styles/noleggio.css";*/
 
 const AccordionItem = ({ id, item, archiviato }) => {
+    /*
     // eslint-disable-next-line no-unused-vars
     const [pagato, setPagato] = useState(item.pagato ? "si" : "no");
     // eslint-disable-next-line no-unused-vars
@@ -106,11 +107,11 @@ const AccordionItem = ({ id, item, archiviato }) => {
 
         setLoading(false);
         window.location.reload();
-    };
+    };*/
 
     return (
         <div className="accordion-item border rounded p-2 mb-2">
-            <h2 className="accordion-header">
+            {/*<h2 className="accordion-header">
                 <button
                     className="accordion-button collapsed"
                     type="button"
@@ -122,15 +123,15 @@ const AccordionItem = ({ id, item, archiviato }) => {
                     {item.codice}{" "}
                     <span className="ms-3">{item.nomecognome}</span>
                 </button>
-            </h2>
+            </h2>*/}
 
-            <div
+            {<div
                 id={id}
                 className="accordion-collapse collapse"
-                data-bs-parent={`#${item.codice}`}
+                //data-bs-parent={`#${item.codice}`}
             >
                 <div className="accordion-body p-3">
-                    <p className="mb-1">
+                    {/*<p className="mb-1">
                         <strong>Attrezzo:</strong>{" "}
                         {
                             {
@@ -151,7 +152,7 @@ const AccordionItem = ({ id, item, archiviato }) => {
                         {item.datafine === false || item.datafine == null
                             ? "(In prestito)"
                             : new Date(item.datafine).toLocaleDateString(
-                                  "it-IT"
+                                  "it-IT",
                               )}
                     </p>
 
@@ -171,31 +172,31 @@ const AccordionItem = ({ id, item, archiviato }) => {
                     <p className="mb-1">
                         <strong>Livello:</strong>{" "}
                         {item.livello || "Non specificato"}
-                    </p>
-                    {item.modalitanoleggio && (
+                    </p>*/}
+                    {/*item.modalitanoleggio && (
                         <p className="mb-1">
                             <strong>Modalità:</strong>{" "}
                             {item.modalitanoleggio === "riscatto"
                                 ? "Noleggio a riscatto"
                                 : "Noleggio normale"}
                         </p>
-                    )}
-                    {item.attrezzaturariscatto && (
+                    )*/}
+                    {/*item.attrezzaturariscatto && (
                         <p className="mb-1">
                             <strong>Attrezzatura da riscattare:</strong>{" "}
                             {item.attrezzaturariscatto}
                         </p>
-                    )}
-                    <p className="mb-1">
+                    )*/}
+                    {/*<p className="mb-1">
                         <strong>Codice famiglia:</strong>{" "}
                         {item.codicefamiglia == null || item.codicefamiglia == 0
                             ? "Nessuno"
                             : item.codicefamiglia}
-                    </p>
+                    </p>*/}
 
                     <p className="mb-1">
-                        <strong>Prezzo:</strong>
-                        {item.modalitanoleggio === "riscatto" &&
+                        {/* <strong>Prezzo:</strong> */}
+                        {/*item.modalitanoleggio === "riscatto" &&
                             item.accontoiniziale && (
                                 <span>
                                     {" "}
@@ -205,13 +206,13 @@ const AccordionItem = ({ id, item, archiviato }) => {
                                         : ""}
                                     ) Totale:
                                 </span>
-                            )}{" "}
-                        <strong className="text-primary">
+                            )*/}{" "}
+                        {/* <strong className="text-primary">
                             €{item.prezzototale}
-                        </strong>
+                        </strong> */}
                     </p>
 
-                    {!archiviato ? (
+                    {/*!archiviato ? (
                         <>
                             <div className="d-flex align-items-center gap-3 mt-3">
                                 <label>
@@ -223,7 +224,7 @@ const AccordionItem = ({ id, item, archiviato }) => {
                                         setPagato(e.target.value);
                                         handleUpdatePagato(
                                             item.codice,
-                                            e.target.value
+                                            e.target.value,
                                         );
                                     }}
                                     className="form-select"
@@ -247,7 +248,7 @@ const AccordionItem = ({ id, item, archiviato }) => {
                                             setSaldoPagato(e.target.value);
                                             handleUpdateSaldoPagato(
                                                 item.codice,
-                                                e.target.value
+                                                e.target.value,
                                             );
                                         }}
                                         className="form-select"
@@ -280,9 +281,9 @@ const AccordionItem = ({ id, item, archiviato }) => {
                                 </div>
                             )}
                         </>
-                    )}
+                    )*/}
 
-                    {!archiviato && (
+                    {/*!archiviato && (
                         <button
                             className="btn btn-outline-secondary btn-sm d-flex align-items-center archivia"
                             disabled={loading}
@@ -326,9 +327,9 @@ const AccordionItem = ({ id, item, archiviato }) => {
                             </svg>
                             {loading ? "Archivio in corso..." : "Archivia"}
                         </button>
-                    )}
+                    )*/}
 
-                    {showPopup && (
+                    {/*showPopup && (
                         <div
                             className="modal modal-sheet position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center"
                             tabIndex="-1"
@@ -356,7 +357,7 @@ const AccordionItem = ({ id, item, archiviato }) => {
                                                 checked={dontShowAgain}
                                                 onChange={(e) =>
                                                     setDontShowAgain(
-                                                        e.target.checked
+                                                        e.target.checked,
                                                     )
                                                 }
                                             />
@@ -391,7 +392,7 @@ const AccordionItem = ({ id, item, archiviato }) => {
                                 </div>
                             </div>
                         </div>
-                    )}
+                    )*/}
                 </div>
             </div>
         </div>

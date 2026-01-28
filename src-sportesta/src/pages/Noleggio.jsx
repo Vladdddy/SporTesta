@@ -5,7 +5,7 @@ import Attrezzo from "../components/Attrezzo";
 const Noleggio = () => {
     return (
         <>
-            <div className="indietro-wrapper">
+            {/* <div className="indietro-wrapper">
                 <a href="/" class="indietro-button">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -31,7 +31,7 @@ const Noleggio = () => {
                         />
                     </svg>
                 </a>
-            </div>
+            </div> */}
 
             <h2
                 style={{
@@ -44,6 +44,8 @@ const Noleggio = () => {
             </h2>
 
             <Attrezzo />
+
+            <div style={{ marginBottom: "4rem" }}></div>
         </>
     );
 };

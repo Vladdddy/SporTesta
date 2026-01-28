@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+/*import React, { useState, useEffect } from "react";
 import NoleggioAccordion from "../components/NoleggioAccordion";
 import { supabase } from "../supabaseClient";
-import "../styles/home.css";
+import "../styles/home.css";*/
 
 const Archivio = () => {
-    const [noleggi, setnoleggi] = useState([]);
+    /*const [noleggi, setnoleggi] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredNoleggi, setFilteredNoleggi] = useState([]);
     const [showNoResultsPopup, setShowNoResultsPopup] = useState(false);
@@ -57,11 +57,11 @@ const Archivio = () => {
                 archiviato={true}
             />
         ));
-    };
+    };*/
 
     return (
         <>
-            <div className="indietro-wrapper">
+            {/*<div className="indietro-wrapper">
                 <a href="/" class="indietro-button">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -122,10 +122,10 @@ const Archivio = () => {
 
                     {displayNoleggi()}
                 </div>
-            </section>
+            </section>*/}
 
             {/* Popup for no search results */}
-            {showNoResultsPopup && (
+            {/*showNoResultsPopup && (
                 <div
                     className="modal modal-sheet position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center"
                     tabIndex="-1"
@@ -153,7 +153,7 @@ const Archivio = () => {
                         </div>
                     </div>
                 </div>
-            )}
+            )*/}
         </>
     );
 };

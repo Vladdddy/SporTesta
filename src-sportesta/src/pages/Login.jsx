@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { API_CONFIG } from "../config";
+/*import React, { useState } from "react";
+import { API_CONFIG } from "../config";*/
 
 const Login = () => {
-    const [isLoading, setIsLoading] = useState(false);
+    /*const [isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -129,7 +129,7 @@ const Login = () => {
                 </div>
             </div>
         </div>
-    );
+    );*/
 };
 
 export default Login;

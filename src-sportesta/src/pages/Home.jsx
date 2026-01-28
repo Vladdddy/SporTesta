@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+/*import React, { useState, useEffect } from "react";
 import NoleggioAccordion from "../components/NoleggioAccordion";
 import NoleggioAccordionOggi from "../components/ScadenzaNoleggio";
 import "../styles/home.css";
-import { supabase } from "../supabaseClient";
+import { supabase } from "../supabaseClient";*/
 
 const Home = () => {
-    const [calcDisplay, setCalcDisplay] = useState("");
+    /*const [calcDisplay, setCalcDisplay] = useState("");
 
     const appendToCalc = (val) => {
         setCalcDisplay(calcDisplay + val);
@@ -175,11 +175,11 @@ const Home = () => {
                 items={noleggiRiscattoScaduti}
             />
         ));
-    };
+    };*/
 
     return (
         <section className="hero">
-            <div className="container mt-4">
+            {/*<div className="container mt-4">
                 <h2
                     style={{
                         textAlign: "center",
@@ -407,10 +407,10 @@ const Home = () => {
                         </button>
                     </div>
                 </div>
-            </div>
+            </div>*/}
 
             {/* Popup for no search results */}
-            {showNoResultsPopup && (
+            {/*showNoResultsPopup && (
                 <div
                     className="modal modal-sheet position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center"
                     tabIndex="-1"
@@ -438,7 +438,7 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
-            )}
+            )*/}
         </section>
     );
 };

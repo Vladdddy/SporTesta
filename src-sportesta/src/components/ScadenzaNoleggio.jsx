@@ -1,8 +1,12 @@
-import React, { useState } from "react";
-import { supabase } from "../supabaseClient";
+/*import React, { useState } from "react";
+import { supabase } from "../supabaseClient";*/
 
-const AccordionItem = ({ id, item, variant = "danger" }) => {
-    const [loading, setLoading] = useState(false);
+const AccordionItem = (
+    {
+        /* id, item, variant = "danger" */
+    },
+) => {
+    /*const [loading, setLoading] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
 
     const borderClass =
@@ -66,10 +70,10 @@ const AccordionItem = ({ id, item, variant = "danger" }) => {
 
         setLoading(false);
         window.location.reload();
-    };
+    };*/
 
-    return (
-        <div
+    return {
+        /* <div
             className={`accordion-item border ${borderClass} rounded p-2 mb-2`}
         >
             <h2 className="accordion-header">
@@ -307,10 +311,10 @@ const AccordionItem = ({ id, item, variant = "danger" }) => {
                     )}
                 </div>
             </div>
-        </div>
-    );
+        </div> */
+    };
 };
-
+/*
 const NoleggioAccordionOggi = ({ id, items, variant = "danger" }) => {
     return (
         <div className="accordion accordion-flush" id={id}>
@@ -329,3 +333,4 @@ const NoleggioAccordionOggi = ({ id, items, variant = "danger" }) => {
 };
 
 export default NoleggioAccordionOggi;
+*/
