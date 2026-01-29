@@ -1,8 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/noleggio.css";
 import Attrezzo from "../components/Attrezzo";
 
 const Noleggio = () => {
+    const [isAuthorized, setIsAuthorized] = useState(false);
+
+    useEffect(() => {
+        // Get the id parameter from URL
+        const params = new URLSearchParams(window.location.search);
+        const urlId = params.get("id");
+
+        // Get the stored id from localStorage
+        const storedId = localStorage.getItem("noleggioToken");
+
+        // If URL has an id parameter, store it
+        if (urlId) {
+            localStorage.setItem("noleggioToken", urlId);
+            setIsAuthorized(true);
+        } else if (storedId) {
+            // Check if stored token exists
+            setIsAuthorized(true);
+        } else {
+            setIsAuthorized(false);
+        }
+    }, []);
+
+    if (!isAuthorized) {
+        return (
+            <div
+                style={{
+                    textAlign: "center",
+                    marginTop: "8rem",
+                    padding: "2rem",
+                }}
+            >
+                <h2>Accesso Non Autorizzato</h2>
+                <p>
+                    Non hai i permessi per accedere a questa pagina. Contatta
+                    l'amministratore.
+                </p>
+            </div>
+        );
+    }
+
     return (
         <>
             {/* <div className="indietro-wrapper">
